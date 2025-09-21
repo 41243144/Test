@@ -1,0 +1,794 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags site_settings_tags %}
+
+{% block body_class %}product-detail-page{% endblock %}
+
+{% block extra_css %}
+  {# 將網站基本設定套用到 <head>：標題/描述/Favicon/GA/GTM #}
+  {% render_meta_tags %}
+  
+  <style>
+    /* 商品詳情頁面專屬樣式 */
+    
+    /* 頁面標題區域 */
+    .product-hero {
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{% static "assets/img/page-title-bg.webp" %}');
+      background-size: cover;
+      background-position: center;
+      padding: 120px 0 80px 0;
+    }
+
+    /* 商品圖片區域 */
+    .product-image-section {
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .product-main-image {
+      width: 100%;
+      height: 400px;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .product-main-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-main-image .no-image {
+      width: 100%;
+      height: 100%;
+      background: rgba(205, 164, 94, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #cda45e;
+      font-size: 5rem;
+    }
+
+    /* 商品資訊區域 */
+    .product-info-section {
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+      padding: 30px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .product-title {
+      color: #cda45e;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .vendor-info {
+      background: rgba(205, 164, 94, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .vendor-name {
+      color: #cda45e;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .vendor-name:hover {
+      color: #b8935a;
+    }
+
+    /* 價格顯示 */
+    .price-section {
+      background: linear-gradient(135deg, rgba(205, 164, 94, 0.1) 0%, rgba(205, 164, 94, 0.05) 100%);
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid rgba(205, 164, 94, 0.2);
+      margin: 20px 0;
+    }
+
+    .product-price {
+      color: #cda45e;
+      font-size: 2.5rem;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    /* 庫存狀態 */
+    .stock-info {
+      margin: 20px 0;
+    }
+
+    .stock-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .stock-in {
+      background: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+      border: 2px solid rgba(40, 167, 69, 0.3);
+    }
+
+    .stock-low {
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+      border: 2px solid rgba(255, 193, 7, 0.3);
+    }
+
+    .stock-out {
+      background: rgba(220, 53, 69, 0.2);
+      color: #dc3545;
+      border: 2px solid rgba(220, 53, 69, 0.3);
+    }
+
+    /* 購買選項 */
+    .purchase-options {
+      background: rgba(255,255,255,0.05);
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .quantity-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .quantity-btn {
+      background: rgba(205, 164, 94, 0.2);
+      border: 1px solid rgba(205, 164, 94, 0.3);
+      color: #cda45e;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .quantity-btn:hover {
+      background: rgba(205, 164, 94, 0.4);
+    }
+
+    .quantity-input {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      text-align: center;
+      width: 80px;
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    /* 按鈕設計 */
+    .btn-add-cart {
+      background: linear-gradient(135deg, #cda45e 0%, #b8935a 100%);
+      border: none;
+      padding: 15px 40px;
+      font-weight: bold;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 5px 15px rgba(205, 164, 94, 0.3);
+      font-size: 1.1rem;
+    }
+
+    .btn-add-cart:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(205, 164, 94, 0.4);
+      background: linear-gradient(135deg, #b8935a 0%, #cda45e 100%);
+    }
+
+    .btn-contact-vendor {
+      background: transparent;
+      border: 2px solid #cda45e;
+      color: #cda45e;
+      padding: 15px 30px;
+      border-radius: 30px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      margin-left: 15px;
+    }
+
+    .btn-contact-vendor:hover {
+      background: #cda45e;
+      color: #fff;
+    }
+
+    /* 商品詳細資訊標籤 */
+    .product-tabs {
+      margin-top: 40px;
+    }
+
+    .nav-tabs {
+      border-bottom: 2px solid rgba(255,255,255,0.1);
+      margin-bottom: 30px;
+    }
+
+    .nav-tabs .nav-link {
+      color: #999;
+      background-color: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 15px 25px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .nav-tabs .nav-link:hover {
+      color: #cda45e;
+      background-color: rgba(205, 164, 94, 0.1);
+    }
+
+    .nav-tabs .nav-link.active {
+      color: #cda45e;
+      background-color: transparent;
+      border-bottom: 3px solid #cda45e;
+    }
+
+    .tab-content {
+      background: rgba(255,255,255,0.03);
+      padding: 30px;
+      border-radius: 15px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* 相關商品區域 */
+    .related-products {
+      margin-top: 60px;
+    }
+
+    .related-product-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 15px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+
+    .related-product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(205, 164, 94, 0.2);
+      border-color: rgba(205, 164, 94, 0.3);
+    }
+
+    .related-product-image {
+      width: 100%;
+      height: 180px;
+      overflow: hidden;
+    }
+
+    .related-product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .related-product-card:hover .related-product-image img {
+      transform: scale(1.05);
+    }
+
+    .related-product-image .no-image {
+      width: 100%;
+      height: 100%;
+      background: rgba(205, 164, 94, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #cda45e;
+      font-size: 2.5rem;
+    }
+
+    .related-product-info {
+      padding: 20px;
+    }
+
+    .related-product-name {
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .related-product-price {
+      color: #cda45e;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .btn-view-related {
+      background: transparent;
+      border: 1px solid #cda45e;
+      color: #cda45e;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-view-related:hover {
+      background: #cda45e;
+      color: #fff;
+    }
+
+    /* 銷售統計 */
+    .sales-info {
+      background: rgba(205, 164, 94, 0.1);
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+      text-align: center;
+    }
+
+    .sales-number {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #cda45e;
+    }
+
+    .sales-label {
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    /* 響應式設計 */
+    @media (max-width: 768px) {
+      .product-title {
+        font-size: 1.5rem;
+      }
+      
+      .product-price {
+        font-size: 2rem;
+      }
+      
+      .btn-add-cart, .btn-contact-vendor {
+        width: 100%;
+        margin: 10px 0;
+      }
+      
+      .quantity-selector {
+        justify-content: center;
+      }
+    }
+  </style>
+{% endblock extra_css %}
+
+{% block content %}
+<main class="main">
+    <!-- Page Title -->
+    <div class="page-title product-hero position-relative" data-aos="fade">
+      <div class="container position-relative">
+        <h1 class="text-light text-center">{{ product.name }}</h1>
+        <p class="text-center text-light fs-5">來自 {{ vendor.name }} 的優質商品</p>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="/">首頁</a></li>
+            <li><a href="{% url 'home:cooperative_farmers' %}">合作小農</a></li>
+            <li><a href="{% url 'home:vendor_products' vendor.id %}">{{ vendor.name }}</a></li>
+            <li class="current">{{ product.name }}</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- 商品詳細資訊 -->
+    <section id="product-detail" class="section py-5">
+      <div class="container">
+        <div class="row gy-4">
+          <!-- 左側：商品圖片 -->
+          <div class="col-lg-6" data-aos="fade-right">
+            <div class="product-image-section">
+              <div class="product-main-image">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+                {% else %}
+                <div class="no-image">
+                  <i class="bi bi-image"></i>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- 右側：商品資訊 -->
+          <div class="col-lg-6" data-aos="fade-left">
+            <div class="product-info-section">
+              <h1 class="product-title">{{ product.name }}</h1>
+              
+              <!-- 小農資訊 -->
+              <div class="vendor-info">
+                <p class="mb-1">
+                  <i class="bi bi-shop"></i> 
+                  <strong>小農：</strong>
+                  <a href="{% url 'home:vendor_products' vendor.id %}" class="vendor-name">{{ vendor.name }}</a>
+                </p>
+                {% if vendor.category %}
+                <p class="mb-1">
+                  <i class="bi bi-tag"></i> 
+                  <strong>分類：</strong>{{ vendor.category.name }}
+                </p>
+                {% endif %}
+                {% if vendor.address %}
+                <p class="mb-0">
+                  <i class="bi bi-geo-alt"></i> 
+                  <strong>產地：</strong>{{ vendor.address }}
+                </p>
+                {% endif %}
+              </div>
+
+              <!-- 價格區域 -->
+              <div class="price-section text-center">
+                <div class="product-price">NT$ {{ product.price|floatformat:0 }}</div>
+              </div>
+
+              <!-- 庫存資訊 -->
+              <div class="stock-info text-center">
+                {% if product.stock_status == 'in_stock' %}
+                <span class="stock-status stock-in">
+                  <i class="bi bi-check-circle"></i> 現貨供應 (剩餘 {{ product.stock }} 件)
+                </span>
+                {% elif product.stock_status == 'low_stock' %}
+                <span class="stock-status stock-low">
+                  <i class="bi bi-exclamation-triangle"></i> 少量現貨 (剩餘 {{ product.stock }} 件)
+                </span>
+                {% else %}
+                <span class="stock-status stock-out">
+                  <i class="bi bi-x-circle"></i> 暫時缺貨
+                </span>
+                {% endif %}
+              </div>
+
+              <!-- 銷售統計 -->
+              {% if product.sales_count > 0 %}
+              <div class="sales-info">
+                <div class="sales-number">{{ product.sales_count }}</div>
+                <div class="sales-label">件商品已售出</div>
+              </div>
+              {% endif %}
+
+              <!-- 購買選項 -->
+              {% if product.stock > 0 %}
+              <div class="purchase-options">
+                <h5 class="text-light mb-3">購買數量</h5>
+                <div class="quantity-selector">
+                  <button class="quantity-btn" id="decreaseQty">-</button>
+                  <input type="number" class="quantity-input" id="quantityInput" value="1" min="1" max="{{ product.stock }}">
+                  <button class="quantity-btn" id="increaseQty">+</button>
+                </div>
+                
+                <div class="text-center">
+                  <button class="btn btn-warning btn-add-cart" id="addToCartBtn">
+                    <i class="bi bi-cart-plus"></i> 加入購物車
+                  </button>
+                </div>
+              </div>
+              {% else %}
+              <div class="purchase-options text-center">
+                <p class="text-light mb-3">此商品目前缺貨，請聯絡小農了解補貨時間</p>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品詳細資訊標籤 -->
+        <div class="product-tabs" data-aos="fade-up">
+          <ul class="nav nav-tabs" id="productTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">
+                <i class="bi bi-card-text"></i> 商品說明
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="vendor-tab" data-bs-toggle="tab" data-bs-target="#vendor" type="button" role="tab">
+                <i class="bi bi-person-badge"></i> 小農介紹
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button" role="tab">
+                <i class="bi bi-truck"></i> 配送資訊
+              </button>
+            </li>
+          </ul>
+          
+          <div class="tab-content" id="productTabContent">
+            <!-- 商品說明 -->
+            <div class="tab-pane fade show active" id="description" role="tabpanel">
+              <h5 class="text-light mb-3">商品說明</h5>
+              {% if product.description %}
+              <p class="text-light">{{ product.description|linebreaks }}</p>
+              {% else %}
+              <p class="text-light">這個商品暫時沒有詳細說明，如有疑問請直接聯絡小農。</p>
+              {% endif %}
+            </div>
+            
+            <!-- 小農介紹 -->
+            <div class="tab-pane fade" id="vendor" role="tabpanel">
+              <h5 class="text-light mb-3">關於 {{ vendor.name }}</h5>
+              {% if vendor.description %}
+              <p class="text-light">{{ vendor.description }}</p>
+              {% elif vendor.intro %}
+              <p class="text-light">{{ vendor.intro }}</p>
+              {% else %}
+              <p class="text-light">{{ vendor.name }} 致力於提供最優質的農產品。</p>
+              {% endif %}
+              
+              <div class="row mt-4">
+                {% if vendor.phone %}
+                <div class="col-md-6">
+                  <p class="text-light"><i class="bi bi-phone"></i> <strong>聯絡電話：</strong>{{ vendor.phone }}</p>
+                </div>
+                {% endif %}
+                {% if vendor.user.email %}
+                <div class="col-md-6">
+                  <p class="text-light"><i class="bi bi-envelope"></i> <strong>電子信箱：</strong>{{ vendor.user.email }}</p>
+                </div>
+                {% endif %}
+                {% if vendor.address %}
+                <div class="col-12">
+                  <p class="text-light"><i class="bi bi-geo-alt"></i> <strong>農場地址：</strong>{{ vendor.address }}</p>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            
+            <!-- 配送資訊 -->
+            <div class="tab-pane fade" id="shipping" role="tabpanel">
+              <h5 class="text-light mb-3">配送與退貨政策</h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <h6 class="text-warning">配送方式</h6>
+                  <ul class="text-light">
+                    <li>宅配配送：全台配送</li>
+                    <li>冷鏈配送：保持新鮮</li>
+                    <li>配送時間：1-3個工作天</li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="text-warning">退貨政策</h6>
+                  <ul class="text-light">
+                    <li>新鮮農產品不接受退貨</li>
+                    <li>商品瑕疵可申請退換</li>
+                    <li>請於收貨當日檢查商品</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 相關商品推薦 -->
+    {% if related_products %}
+    <section class="related-products section py-5" style="background-color: rgba(0,0,0,0.02);">
+      <div class="container">
+        <div class="section-title text-center mb-5" data-aos="fade-up">
+          <h3 class="text-light">{{ vendor.name }} 的其他商品</h3>
+          <p class="text-light">更多來自同一小農的優質產品</p>
+        </div>
+        
+        <div class="row gy-4" data-aos="fade-up" data-aos-delay="100">
+          {% for related_product in related_products %}
+          <div class="col-lg-3 col-md-6">
+            <div class="related-product-card">
+              <div class="related-product-image">
+                {% if related_product.image %}
+                <img src="{{ related_product.image.url }}" alt="{{ related_product.name }}">
+                {% else %}
+                <div class="no-image">
+                  <i class="bi bi-image"></i>
+                </div>
+                {% endif %}
+              </div>
+              <div class="related-product-info text-center">
+                <h6 class="related-product-name">{{ related_product.name }}</h6>
+                <div class="related-product-price">NT$ {{ related_product.price|floatformat:0 }}</div>
+                {% if related_product.sales_count > 0 %}
+                <small class="text-muted">已售 {{ related_product.sales_count }} 件</small>
+                {% endif %}
+                <div class="mt-3">
+                  <a href="{% url 'home:product_detail' vendor.id related_product.id %}" class="btn-view-related">
+                    <i class="bi bi-eye"></i> 查看詳情
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+          <a href="{% url 'home:vendor_products' vendor.id %}" class="btn btn-warning">
+            <i class="bi bi-grid"></i> 查看 {{ vendor.name }} 的全部商品
+          </a>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化 AOS 動畫
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 1000,
+            easing: 'ease-in-out',
+            once: true
+        });
+    }
+
+    // 數量增減功能
+    const decreaseBtn = document.getElementById('decreaseQty');
+    const increaseBtn = document.getElementById('increaseQty');
+    const quantityInput = document.getElementById('quantityInput');
+    
+    if (decreaseBtn && quantityInput) {
+        decreaseBtn.addEventListener('click', function() {
+            let currentValue = parseInt(quantityInput.value);
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
+        });
+    }
+    
+    if (increaseBtn && quantityInput) {
+        increaseBtn.addEventListener('click', function() {
+            let currentValue = parseInt(quantityInput.value);
+            let maxValue = parseInt(quantityInput.getAttribute('max')) || 10;
+            if (currentValue < maxValue) {
+                quantityInput.value = currentValue + 1;
+            }
+        });
+    }
+
+    // 加入購物車功能
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', function() {
+            const quantity = quantityInput ? quantityInput.value : 1;
+            
+            // 發送 AJAX 請求到購物車
+            fetch('{% url "cart:add_to_cart" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    product_id: {{ product.id }},
+                    quantity: parseInt(quantity)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 更新按鈕狀態
+                    this.innerHTML = '<i class="bi bi-check-circle"></i> 已加入購物車';
+                    this.classList.remove('btn-warning');
+                    this.classList.add('btn-success');
+                    this.disabled = true;
+                    
+                    // 更新購物車數量（如果有購物車圖示）
+                    updateCartCount(data.total_items);
+                    
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="bi bi-cart-plus"></i> 加入購物車';
+                        this.classList.remove('btn-success');
+                        this.classList.add('btn-warning');
+                        this.disabled = false;
+                    }, 2000);
+                    
+                    // 顯示成功通知
+                    showNotification(data.message, 'success');
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('加入購物車失敗，請稍後再試', 'error');
+            });
+        });
+    }
+
+    // 通知訊息功能
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} notification-toast`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 9999;
+            animation: slideInRight 0.3s ease-out;
+            min-width: 300px;
+        `;
+        notification.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <span>${message}</span>
+                <button type="button" class="btn-close ms-2" aria-label="Close"></button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // 關閉按鈕功能
+        notification.querySelector('.btn-close').addEventListener('click', function() {
+            notification.remove();
+        });
+        
+        // 自動移除
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+});
+
+// 獲取 CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// 更新購物車數量
+function updateCartCount(count) {
+    const cartCountElements = document.querySelectorAll('.cart-count');
+    cartCountElements.forEach(element => {
+        element.textContent = count;
+        if (count > 0) {
+            element.style.display = 'inline';
+        }
+    });
+}
+
+// CSS 動畫樣式
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+`;
+document.head.appendChild(style);
+</script>
+
+{% endblock content %}

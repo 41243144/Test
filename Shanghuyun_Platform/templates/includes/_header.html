@@ -1,0 +1,276 @@
+{% load static site_settings_tags %}
+<header id="header" class="header fixed-top">
+
+    <div class="topbar d-flex align-items-center">
+      <div class="container d-flex justify-content-center justify-content-md-between">
+        <div class="contact-info d-flex align-items-center">
+          {% get_site_setting 'contact_email' as contact_email %}
+          {% get_site_setting 'contact_phone' as contact_phone %}
+          <i class="bi bi-envelope d-flex align-items-center">
+            <a href="mailto:{{ contact_email|default:'contact@shanghuyun.com' }}">{{ contact_email|default:'contact@shanghuyun.com' }}</a>
+          </i>
+          <i class="bi bi-phone d-flex align-items-center ms-4">
+            <span>{{ contact_phone|default:'+886-2-1234-5678' }}</span>
+          </i>
+        </div>
+        {% comment %} <div class="languages d-none d-md-flex align-items-center">
+          <ul>
+            <li>En</li>
+            <li><a href="#">De</a></li>
+          </ul>
+        </div> {% endcomment %}
+      </div>
+    </div><!-- End Top Bar -->
+
+    <div class="branding d-flex align-items-cente">
+
+      <div class="container position-relative d-flex align-items-center justify-content-between">
+        <a href="/" class="logo d-flex align-items-center me-auto me-xl-0">
+          {% get_site_setting 'site_logo' as site_logo %}
+          {% get_site_setting 'site_name' as site_name %}
+          {% if site_logo %}
+            <img src="{{ site_logo.file.url }}" alt="{{ site_name|default:'尚虎雲產銷平台' }}">
+            <h1 class="sitename">{{ site_name|default:'尚虎雲產銷平台' }}</h1>
+          {% endif %}
+        </a>        
+        <nav id="navmenu" class="navmenu">
+          <ul>
+            <li><a href="/">首頁<br></a></li>
+            <li><a href="{% url 'news:list' %}">最新消息</a></li>
+            <li><a href="{% url 'home:cooperative_farmers' %}">合作夥伴</a></li>
+            {% comment %} <li><a href="#specials">Specials</a></li>
+            <li><a href="#events">Events</a></li>
+            <li><a href="#chefs">Chefs</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+              <ul>
+                <li><a href="#">Dropdown 1</a></li>
+                <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                  <ul>
+                    <li><a href="#">Deep Dropdown 1</a></li>
+                    <li><a href="#">Deep Dropdown 2</a></li>
+                    <li><a href="#">Deep Dropdown 3</a></li>
+                    <li><a href="#">Deep Dropdown 4</a></li>
+                    <li><a href="#">Deep Dropdown 5</a></li>
+                  </ul>
+                </li>
+                <li><a href="#">Dropdown 2</a></li>
+                <li><a href="#">Dropdown 3</a></li>
+                <li><a href="#">Dropdown 4</a></li>
+              </ul>
+            </li>
+            <li><a href="#contact">Contact</a></li> {% endcomment %}
+            
+            <!-- Mobile User Menu Items -->
+            {% if user.is_authenticated %}
+              <li class="mobile-user-menu d-xl-none">
+                <a href="{% url "profile" %}"><i class="fas fa-user-circle me-2"></i>個人資料</a>
+              </li>
+              <li class="mobile-user-menu d-xl-none">
+                <a href="{% url 'cart:cart_detail' %}"><i class="fas fa-shopping-cart me-2"></i>購物車</a>
+              </li>
+              <li class="mobile-user-menu d-xl-none">
+                <a href="/api/v1/order/history/"><i class="fas fa-receipt me-2"></i>訂單紀錄</a>
+              </li>
+              
+              {% comment %} 行動版管理功能選項 - 根據使用者身分顯示 {% endcomment %}
+              {% if user.is_superuser or user.is_staff %}
+                <li class="mobile-user-menu d-xl-none">
+                  <a href="/admin/"><i class="fas fa-cogs me-2"></i>後臺管理</a>
+                </li>
+                {% if user.is_superuser %}
+                  <li class="mobile-user-menu d-xl-none">
+                    <a href="/admin/product/product/"><i class="fas fa-box me-2"></i>商品管理</a>
+                  </li>
+                {% endif %}
+              {% elif user.vendor_profile %}
+                <li class="mobile-user-menu d-xl-none">
+                  <a href="/admin/product/product/"><i class="fas fa-box me-2"></i>商品管理</a>
+                </li>
+              {% endif %}
+              
+              <li class="mobile-user-menu d-xl-none">
+                <a href="{% url 'account_logout' %}?next=/" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();" class="text-danger">
+                  <i class="fas fa-sign-out-alt me-2"></i>登出
+                </a>
+              </li>
+            {% else %}
+              <li class="mobile-auth-menu d-xl-none">
+                <a href="{% url 'account_login' %}" class="mobile-login-btn">
+                  <i class="fas fa-sign-in-alt me-2"></i>登入 / 註冊
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        </nav>
+
+        {% comment %} <a class="btn-book-a-table d-none d-xl-block" href="#book-a-table">Book a Table</a> {% endcomment %}        
+        <!-- Desktop User Menu -->
+        {% if user.is_authenticated %}
+        <!-- User Profile Dropdown -->
+        <div class="user-profile-dropdown dropdown ms-2 ms-xl-3 d-none d-xl-block">
+          <a href="#" id="userProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" class="d-flex align-items-center">            
+            {% if user.profile and user.profile.portrait %}
+              <img src="{{ user.profile.portrait.url }}" alt="User Avatar" class="user-avatar-header">
+            {% else %}
+              <img src="{% static 'assets/img/specials-1.png' %}" alt="User Avatar" class="user-avatar-header">
+            {% endif %}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+            <li><h6 class="dropdown-header">{{ user.username }}</h6></li>
+            <li><a class="dropdown-item" href="{% url "profile" %}"><i class="fas fa-user-circle"></i>個人資料</a></li>
+            <li><a class="dropdown-item" href="{% url 'cart:cart_detail' %}"><i class="fas fa-shopping-cart"></i>購物車</a></li>
+            <li><a class="dropdown-item" href="/api/v1/order/history/"><i class="fas fa-receipt"></i>訂單紀錄</a></li>
+            
+            {% comment %} 管理功能選項 - 根據使用者身分顯示 {% endcomment %}
+            {% if user.is_superuser or user.is_staff %}
+              <li><hr class="dropdown-divider"></li>
+              <li><h6 class="dropdown-header text-muted">管理功能</h6></li>
+              {% if user.is_superuser or user.is_staff %}
+                <li><a class="dropdown-item" href="/admin/"><i class="fas fa-cogs"></i>後臺管理</a></li>
+              {% endif %}
+              {% if user.is_superuser %}
+                <li><a class="dropdown-item" href="/admin/product/product/"><i class="fas fa-box"></i>商品管理</a></li>
+              {% endif %}
+            {% elif user.vendor_profile %}
+              <li><hr class="dropdown-divider"></li>
+              <li><h6 class="dropdown-header text-muted">商家功能</h6></li>
+              <li><a class="dropdown-item" href="/admin/product/product/"><i class="fas fa-box"></i>商品管理</a></li>
+            {% endif %}
+            
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{% url 'account_logout' %}?next=/" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt"></i>登出</a></li>
+          </ul>
+        </div>
+        <form id="logout-form" action="{% url 'account_logout' %}" method="post" style="display:none;">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="/">
+        </form>
+        <!-- Mobile logout form -->
+        <form id="logout-form-mobile" action="{% url 'account_logout' %}" method="post" style="display:none;">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="/">
+        </form>
+        {% else %}
+        <!-- Desktop Login Button -->
+        <div class="d-none d-xl-flex ms-2 ms-xl-3">
+          <a href="{% url 'account_login' %}" class="btn login-signup-btn rounded-pill px-4 py-2 fw-bold shadow-sm">
+            <i class="fas fa-sign-in-alt me-2"></i>登入 / 註冊
+          </a>
+        </div>        
+        <style>
+        .login-signup-btn {
+          background: linear-gradient(90deg, #cda45e 0%, #ffb03b 100%);
+          color: #29261f !important;
+          border: none;
+          border-radius: 50px;
+          font-size: 1.08em;
+          letter-spacing: 0.5px;
+          font-family: 'Poppins', 'Roboto', 'Playfair Display', sans-serif;
+          box-shadow: 0 2px 8px rgba(205, 164, 94, 0.10);
+          transition: background 0.18s, box-shadow 0.18s, color 0.18s;
+        }
+        .login-signup-btn:hover, .login-signup-btn:focus {
+          background: linear-gradient(90deg, #ffb03b 0%, #cda45e 100%);
+          color: #fff !important;
+          box-shadow: 0 4px 16px rgba(255, 176, 59, 0.18);
+          text-decoration: none;
+        }
+          /* Mobile menu styles */
+        .mobile-login-btn {
+          background: linear-gradient(135deg, #cda45e 0%, #ffb03b 100%) !important;
+          color: #ffffff !important;
+          border-radius: 30px;
+          padding: 15px 25px !important;
+          font-weight: 700;
+          font-size: 1.1em;
+          text-decoration: none;
+          display: block;
+          margin: 15px auto;
+          max-width: 200px;
+          text-align: center;
+          box-shadow: 0 4px 15px rgba(205, 164, 94, 0.4);
+          transition: all 0.3s ease;
+          border: 2px solid transparent;
+        }
+        
+        .mobile-login-btn:hover {
+          background: linear-gradient(135deg, #ffb03b 0%, #e09d4a 100%) !important;
+          color: #ffffff !important;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(255, 176, 59, 0.5);
+          border: 2px solid #cda45e;
+        }
+        
+        .mobile-user-menu a {
+          color: #ffffff !important;
+          font-weight: 600;
+          font-size: 1.05em;
+          padding: 15px 20px !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          display: block;
+          transition: all 0.3s ease;
+        }
+        
+        .mobile-user-menu a:hover {
+          color: #cda45e !important;
+          background-color: rgba(205, 164, 94, 0.1);
+          padding-left: 30px !important;
+        }
+        
+        .mobile-auth-menu a:not(.mobile-login-btn) {
+          color: #ffffff !important;
+          font-weight: 600;
+          font-size: 1.05em;
+          padding: 15px 20px !important;
+        }        
+        .mobile-user-menu a.text-danger {
+          color: #ff6b6b !important;
+          background-color: rgba(255, 107, 107, 0.1);
+          border-radius: 8px;
+          margin: 10px 0;
+        }
+        
+        .mobile-user-menu a.text-danger:hover {
+          color: #ffffff !important;
+          background-color: #ff6b6b;
+          transform: translateY(-1px);
+        }
+        
+        /* Add some spacing for mobile menu items */
+        @media (max-width: 1199.98px) {
+          .mobile-user-menu, .mobile-auth-menu {
+            border-top: 2px solid rgba(205, 164, 94, 0.3);
+            margin-top: 20px;
+            padding-top: 20px;
+          }
+          
+          .mobile-auth-menu {
+            text-align: center;
+            padding: 20px 15px;
+          }
+          
+          /* 調整選單項目間距 */
+          .mobile-user-menu li, .mobile-auth-menu li {
+            margin: 8px 0;
+          }
+          
+          /* 手機選單背景調整 */
+          .navmenu {
+            background-color: rgba(40, 38, 31, 0.98) !important;
+          }
+          
+          /* 選單項目文字陰影效果 */
+          .mobile-user-menu a, .mobile-auth-menu a {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          }
+        }
+        </style>
+        {% endif %}
+
+      </div>
+
+    </div>
+
+  </header>

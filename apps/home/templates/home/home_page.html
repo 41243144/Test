@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags site_settings_tags %}
+
+{% block body_class %}home-page{% endblock %}
+
+{% block extra_css %}
+  {# 將網站基本設定套用到 <head>：標題/描述/Favicon/GA/GTM #}
+  {% render_meta_tags %}
+  
+  <style>
+    /* 最新消息區域樣式 */
+    .news.section {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    }
+    
+    .news-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      height: 100%;
+    }
+    
+    .news-item:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      border-color: #cda45e;
+    }
+    
+    .news-img {
+      position: relative;
+      overflow: hidden;
+      height: 250px;
+    }
+    
+    .news-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .news-item:hover .news-img img {
+      transform: scale(1.1);
+    }
+    
+    .news-date {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(135deg, #cda45e, #b8935a);
+      color: white;
+      border-radius: 10px;
+      padding: 8px 12px;
+      text-align: center;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .news-date .day {
+      display: block;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+    
+    .news-date .month {
+      display: block;
+      font-size: 0.8rem;
+      line-height: 1;
+      opacity: 0.9;
+    }
+    
+    .news-content {
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 250px);
+    }
+    
+    .news-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      font-size: 0.85rem;
+    }
+    
+    .news-meta .category {
+      background: rgba(205, 164, 94, 0.2);
+      color: #cda45e;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-weight: 500;
+    }
+    
+    .news-meta .date {
+      color: #999;
+    }
+    
+    .news-content h3 {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      flex-grow: 0;
+    }
+    
+    .news-content h3 a {
+      color: #fff;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    .news-content h3 a:hover {
+      color: #cda45e;
+    }
+    
+    .news-content p {
+      color: #ccc;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      flex-grow: 1;
+      font-size: 0.95rem;
+    }
+    
+    .news-author {
+      display: flex;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .news-author .author-img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      margin-right: 10px;
+      object-fit: cover;
+    }
+    
+    .news-author .author-name {
+      color: #cda45e;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    
+    .btn-more-news {
+      display: inline-block;
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #cda45e, #b8935a);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(205, 164, 94, 0.3);
+    }
+    
+    .btn-more-news:hover {
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(205, 164, 94, 0.4);
+      background: linear-gradient(135deg, #b8935a, #cda45e);
+    }
+    
+    /* 響應式設計 */
+    @media (max-width: 768px) {
+      .news-content {
+        padding: 20px;
+      }
+      
+      .news-content h3 {
+        font-size: 1.1rem;
+      }
+      
+      .news-img {
+        height: 200px;
+      }
+      
+      .news-content {
+        height: calc(100% - 200px);
+      }
+    }
+  </style>
+{% endblock extra_css %}
+
+{% block content %}
+<main class="main">
+    <!-- 使用 StreamField 區塊 -->
+    {% for block in page.body %}
+        {% include_block block %}
+    {% empty %}
+        <!-- 如果沒有任何區塊，顯示預設內容 -->
+        {% get_site_setting 'site_name' as site_name %}
+        {% get_site_setting 'site_tagline' as site_tagline %}
+        
+        <section id="hero" class="hero section dark-background">
+            <img src="{% static 'assets/img/hero-bg.jpg' %}" alt="" data-aos="fade-in">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 d-flex flex-column align-items-center align-items-lg-start">
+                        <h2 data-aos="fade-up" data-aos-delay="100">歡迎來到 <span>{{ site_name|default:"尚虎雲產銷平台" }}</span></h2>
+                        <p data-aos="fade-up" data-aos-delay="200">{{ site_tagline|default:"連結生產者與消費者，打造智慧農業新生態！" }}</p>
+                        <div class="d-flex mt-4" data-aos="fade-up" data-aos-delay="300">
+                            <a href="{% url 'home:cooperative_farmers' %}" class="cta-btn">瀏覽商品</a>
+                            <a href="{% url 'account_login' %}" class="cta-btn">加入平台</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endfor %}
+</main>
+
+{% comment %}
+Delete the line below if you're just getting started and want to remove the welcome screen!
+{% endcomment %}
+
+{% endblock content %}

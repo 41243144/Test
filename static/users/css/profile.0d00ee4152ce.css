@@ -1,0 +1,510 @@
+.profile-container {
+    display: flex;
+    margin-top: 20px; /* Add some margin from the top */
+}
+.profile-sidebar {
+    width: 250px;
+    padding: 20px;
+    background-color: #f8f9fa; /* Light background for sidebar */
+    border-right: 1px solid #dee2e6;
+    min-height: calc(100vh - 180px); /* Adjust based on header/footer height */
+}
+.profile-sidebar .nav-link {
+    color: #333;
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    border-radius: .25rem;
+}
+.profile-sidebar .nav-link.active,
+.profile-sidebar .nav-link:hover {
+    background-color: var(--accent-color); /* Use accent color from template */
+    color: white;
+}
+.profile-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+.avatar-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.avatar-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 1rem;
+    border: 3px solid #dee2e6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+.avatar-preview img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.form-control[readonly] {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+.phone-input-group {
+    display: flex;
+    align-items: center;
+}
+.phone-input-group .form-control {
+    flex-grow: 1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.phone-input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px; /* Overlap border */
+}
+.btn-resend-code {
+    margin-left: 10px;
+}
+.info-display {
+    background-color: #e9ecef;
+    padding: .375rem .75rem;
+    border-radius: .25rem;
+    border: 1px solid #ced4da;
+    margin-bottom: 1rem;
+}
+/* Added style for Filepond container */
+.filepond--root {
+    max-width: 200px; /* Adjust as needed */
+    margin: 0 auto; /* Center the Filepond input */
+}
+.custom-btn{
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+.custom-btn:hover {
+    background-color: color-mix(in srgb, var(--accent-color), transparent 25%) !important;
+}
+
+/* SweetAlert2 自定義樣式 */
+.swal2-popup {
+    border-radius: 12px;
+    font-family: inherit;
+}
+
+.swal2-title {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.swal2-html-container {
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+.swal2-confirm {
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    padding: 10px 24px !important;
+}
+
+.swal2-cancel {
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    padding: 10px 24px !important;
+}
+
+/* 帳號管理標籤頁樣式增強 */
+#account-management-tab .card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    border-radius: 12px;
+}
+
+#account-management-tab .card-body {
+    padding: 32px;
+}
+
+#account-management-tab .card-title {
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+#account-management-tab .card-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: var(--accent-color);
+    border-radius: 2px;
+}
+
+/* =======================
+   響應式設計 - Responsive Design
+   ======================= */
+
+/* 大螢幕 (1200px 以上) */
+@media (min-width: 1200px) {
+    .profile-container {
+        max-width: 1140px;
+        margin: 20px auto;
+    }
+    
+    .profile-sidebar {
+        width: 280px;
+    }
+    
+    .profile-content {
+        padding: 30px;
+    }
+    
+    .card-body {
+        padding: 2.5rem !important;
+    }
+}
+
+/* 中等螢幕 (992px - 1199px) */
+@media (max-width: 1199.98px) and (min-width: 992px) {
+    .profile-container {
+        margin: 15px;
+    }
+    
+    .profile-sidebar {
+        width: 240px;
+    }
+    
+    .profile-content {
+        padding: 25px;
+    }
+}
+
+/* 平板螢幕 (768px - 991px) */
+@media (max-width: 991.98px) and (min-width: 768px) {
+    .profile-container {
+        flex-direction: column;
+        margin: 10px;
+    }
+    
+    .profile-sidebar {
+        width: 100%;
+        min-height: auto;
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+        padding: 15px;
+    }
+    
+    .profile-sidebar .nav {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .profile-sidebar .nav-link {
+        flex: 0 0 auto;
+        margin: 0;
+        padding: 8px 16px;
+        white-space: nowrap;
+        font-size: 0.9rem;
+    }
+    
+    .profile-content {
+        padding: 20px;
+    }
+    
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    /* 調整頭像大小 */
+    .avatar-preview {
+        width: 120px;
+        height: 120px;
+    }
+    
+    /* 保持 Filepond 容器大小 */
+    .filepond--root {
+        max-width: 180px;
+    }
+}
+
+/* 手機螢幕 (576px - 767px) */
+@media (max-width: 767.98px) and (min-width: 576px) {
+    .profile-container {
+        flex-direction: column;
+        margin: 5px;
+    }
+    
+    .profile-sidebar {
+        width: 100%;
+        min-height: auto;
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+        padding: 12px;
+    }
+    
+    .profile-sidebar .nav {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .profile-sidebar .nav-link {
+        text-align: center;
+        padding: 10px;
+        margin: 0;
+        font-size: 0.95rem;
+    }
+    
+    .profile-content {
+        padding: 15px;
+    }
+    
+    .card-body {
+        padding: 1.25rem !important;
+    }
+    
+    /* 調整頭像大小 */
+    .avatar-preview {
+        width: 100px;
+        height: 100px;
+    }
+    
+    /* 保持 Filepond 容器大小 */
+    .filepond--root {
+        max-width: 150px;
+    }
+    
+    /* 調整表單元素 */
+    .form-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .form-control {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    /* 調整按鈕 */
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    /* 手機版電話輸入群組 */
+    .phone-input-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .phone-input-group .form-control {
+        border-radius: 0.375rem;
+        margin-bottom: 0;
+    }
+    
+    .phone-input-group .btn {
+        border-radius: 0.375rem;
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+/* 極小螢幕 (575px 以下) */
+@media (max-width: 575.98px) {
+    .profile-container {
+        flex-direction: column;
+        margin: 0;
+        padding: 10px;
+    }
+    
+    .profile-sidebar {
+        width: 100%;
+        min-height: auto;
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+        padding: 10px;
+        background-color: #f8f9fa;
+    }
+    
+    .profile-sidebar .nav {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .profile-sidebar .nav-link {
+        text-align: center;
+        padding: 12px 10px;
+        margin: 0;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+    
+    .profile-content {
+        padding: 10px;
+    }
+    
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .card-title {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* 調整頭像大小 */
+    .avatar-preview {
+        width: 80px;
+        height: 80px;
+    }
+    
+    /* 保持 Filepond 容器大小但調整更小 */
+    .filepond--root {
+        max-width: 120px;
+    }
+    
+    /* 調整表單元素 */
+    .form-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        font-size: 0.85rem;
+        padding: 0.5rem;
+    }
+    
+    .input-group-text {
+        font-size: 0.85rem;
+        padding: 0.5rem;
+    }
+    
+    /* 調整按鈕 */
+    .btn-lg {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+    }
+    
+    .btn {
+        font-size: 0.85rem;
+    }
+    
+    /* 手機版電話輸入群組 */
+    .phone-input-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .phone-input-group .form-control {
+        border-radius: 0.375rem;
+        margin-bottom: 0;
+    }
+    
+    .phone-input-group .btn {
+        border-radius: 0.375rem;
+        width: 100%;
+        margin-left: 0;
+        padding: 0.5rem;
+    }
+    
+    /* 驗證碼重新發送按鈕 */
+    .btn-resend-code {
+        margin-left: 0;
+        margin-top: 5px;
+        font-size: 0.8rem;
+    }
+    
+    /* 頁面標題調整 */
+    .page-title h1 {
+        font-size: 1.8rem;
+    }
+    
+    .page-title p {
+        font-size: 0.9rem;
+    }
+    
+    /* 麵包屑導航調整 */
+    .breadcrumbs {
+        font-size: 0.8rem;
+    }
+    
+    /* 表單間距調整 */
+    .mb-3 {
+        margin-bottom: 1rem !important;
+    }
+    
+    /* icon 調整 */
+    .form-label i {
+        font-size: 0.9rem;
+    }
+    
+    /* 驗證訊息調整 */
+    .form-text, .invalid-feedback, .valid-feedback {
+        font-size: 0.8rem;
+    }
+}
+
+/* 橫向模式調整 (手機橫屏) */
+@media (max-height: 500px) and (orientation: landscape) {
+    .profile-sidebar {
+        padding: 8px;
+    }
+    
+    .profile-sidebar .nav {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .profile-sidebar .nav-link {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .profile-content {
+        padding: 10px;
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .avatar-preview {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .filepond--root {
+        max-width: 100px;
+    }
+}
+
+/* 高 DPI 螢幕優化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .avatar-preview {
+        border-width: 2px;
+    }
+    
+    .profile-sidebar .nav-link {
+        border-width: 2px;
+    }
+}

@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}news-detail-page{% endblock %}
+
+{% block content %}
+<main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title position-relative" data-aos="fade" style="background-image: url({% static 'assets/img/page-title-bg.webp' %});">
+      <div class="container position-relative">
+        <h1>{{ news_post.title }}<br></h1>
+        <p>{{ news_post.excerpt|truncatechars:100 }}</p>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="/">首頁</a></li>
+            <li><a href="{% url 'news:list' %}">最新消息</a></li>
+            <li class="current">{{ news_post.title|truncatechars:30 }}</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- News Detail Section -->
+    <section id="news-detail" class="news-detail section">
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4">
+          <!-- 主要內容 -->
+          <div class="col-lg-8">
+            <article class="news-article">
+              <!-- 文章標頭 -->
+              <div class="article-header">
+                {% if news_post.featured_image %}
+                  {% image news_post.featured_image fill-800x400 as article_img %}
+                  <img src="{{ article_img.url }}" alt="{{ news_post.title }}" class="img-fluid article-image">
+                {% endif %}
+                
+                <div class="article-meta">
+                  <div class="meta-info">
+                    {% if news_post.category %}
+                    <span class="category" style="background-color: {{ news_post.category.color }}20; color: {{ news_post.category.color }};">
+                      <i class="bi bi-folder"></i> {{ news_post.category.name }}
+                    </span>
+                    {% endif %}
+                    <span class="date">
+                      <i class="bi bi-calendar"></i> {{ news_post.first_published_at|date:"Y年m月d日" }}
+                    </span>
+                    {% if news_post.author %}
+                    <span class="author">
+                      <i class="bi bi-person"></i> {{ news_post.author.name }}
+                    </span>
+                    {% endif %}
+                  </div>
+                  
+                  {% if news_post.tags.exists %}
+                  <div class="tags">
+                    <i class="bi bi-tags"></i>
+                    {% for tag in news_post.tags.all %}
+                    <span class="tag">{{ tag.name }}</span>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- 文章內容 -->
+              <div class="article-content">
+                <div class="article-excerpt">
+                  <p class="lead">{{ news_post.excerpt }}</p>
+                </div>
+                
+                <div class="article-body">
+                  {% for block in news_post.content %}
+                    {% if block.block_type == 'heading' %}
+                      <h3>{{ block.value }}</h3>
+                    {% elif block.block_type == 'paragraph' %}
+                      {{ block.value|richtext }}
+                    {% elif block.block_type == 'image' %}
+                        {% image block.value.image fill-800x400 as content_img %}
+                        <div class="content-image">
+                            <img src="{{ content_img.url }}" alt="{{ block.value.alt_text|default:block.value.caption }}" class="img-fluid">
+                        </div>
+                        {% if block.value.caption %}
+                            <div class="image-caption">{{ block.value.caption }}</div>
+                        {% endif %}
+                    {% elif block.block_type == 'quote' %}
+                      <blockquote class="blockquote">
+                        <p>{{ block.value }}</p>
+                      </blockquote>
+                    {% elif block.block_type == 'code' %}
+                      <pre><code>{{ block.value.code }}</code></pre>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+
+              <!-- 分享按鈕 -->
+              <div class="article-share">
+                <h5>分享這篇文章</h5>
+                <div class="share-buttons">
+                  <a href="#" class="share-btn facebook" title="分享到 Facebook">
+                    <i class="bi bi-facebook"></i>
+                  </a>
+                  <a href="#" class="share-btn twitter" title="分享到 Twitter">
+                    <i class="bi bi-twitter"></i>
+                  </a>
+                  <a href="#" class="share-btn line" title="分享到 LINE">
+                    <i class="bi bi-chat-dots"></i>
+                  </a>
+                  <a href="#" class="share-btn email" title="透過 Email 分享">
+                    <i class="bi bi-envelope"></i>
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- 側邊欄 -->
+          <div class="col-lg-4">
+            <aside class="sidebar">
+              <!-- 最新文章 -->
+              <div class="sidebar-widget">
+                <h4 class="widget-title">最新文章</h4>
+                <div class="recent-posts">
+                  {% for post in related_posts %}
+                  <div class="recent-post-item">
+                    <div class="post-thumb">
+                      {% if post.featured_image %}
+                        {% image post.featured_image fill-80x60 as thumb_img %}
+                        <img src="{{ thumb_img.url }}" alt="{{ post.title }}">
+                      {% else %}
+                        <img src="{% static 'assets/img/blog/blog-1.jpg' %}" alt="{{ post.title }}">
+                      {% endif %}
+                    </div>
+                    <div class="post-info">
+                      <h6><a href="{{ post.url }}">{{ post.title|truncatechars:50 }}</a></h6>
+                      <span class="post-date">{{ post.first_published_at|date:"m/d" }}</span>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <!-- 分類列表 -->
+              <div class="sidebar-widget">
+                <h4 class="widget-title">文章分類</h4>
+                <ul class="category-list">
+                  {% for category in categories %}
+                  <li>
+                    <a href="{% url 'news:category' category.slug %}">
+                      <span class="category-name">{{ category.name }}</span>
+                      <span class="category-count">{{ category.newspost_set.count }}</span>
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+
+              <!-- 返回列表 -->
+              <div class="sidebar-widget">
+                <div class="back-to-list">
+                  <a href="{% url 'news:list' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> 返回消息列表
+                  </a>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+      </div>
+    </section><!-- /News Detail Section -->
+
+</main>
+
+<style>
+    .text-muted {
+        color: #fff !important;
+    }
+  /* 文章樣式 */
+  .article-image {
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    margin-bottom: 30px;
+  }
+  
+  .article-meta {
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+  }
+  
+  .meta-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .meta-info span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 15px;
+    font-size: 0.9rem;
+    color: #fff;
+  }
+  
+  .tags {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #cda45e;
+  }
+  
+  .tag {
+    background: rgba(205, 164, 94, 0.2);
+    color: #cda45e;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+  }
+  
+  .article-excerpt .lead {
+    font-size: 1.2rem;
+    color: #cda45e;
+    font-weight: 500;
+    line-height: 1.6;
+    border-left: 4px solid #cda45e;
+    padding-left: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .article-body {
+    color: #fff;
+    line-height: 1.8;
+  }
+  
+  .article-body h3 {
+    color: #cda45e;
+    margin: 30px 0 20px;
+  }
+  
+  .content-image {
+    margin: 30px 0;
+    text-align: center;
+  }
+  
+  .content-image img {
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+  
+  .blockquote {
+    background: rgba(205, 164, 94, 0.1);
+    border-left: 4px solid #cda45e;
+    padding: 20px;
+    margin: 30px 0;
+    border-radius: 0 10px 10px 0;
+  }
+  
+  /* 分享按鈕 */
+  .article-share {
+    margin-top: 40px;
+    padding: 30px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
+    text-align: center;
+  }
+  
+  .share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    background: #333;
+    color: #fff;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .share-btn:hover {
+    transform: translateY(-3px);
+    color: #fff;
+  }
+  
+  .share-btn.facebook:hover { background: #1877f2; }
+  .share-btn.twitter:hover { background: #1da1f2; }
+  .share-btn.line:hover { background: #00c300; }
+  .share-btn.email:hover { background: #ea4335; }
+  
+  /* 側邊欄樣式 */
+  .sidebar-widget {
+    background: rgba(255,255,255,0.05);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+  }
+  
+  .widget-title {
+    color: #cda45e;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(205, 164, 94, 0.3);
+  }
+  
+  .recent-post-item {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .recent-post-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  
+  .post-thumb img {
+    width: 60px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .post-info h6 a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  
+  .post-info h6 a:hover {
+    color: #cda45e;
+  }
+  
+  .post-date {
+    color: #999;
+    font-size: 0.8rem;
+  }
+  
+  .category-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .category-list li {
+    margin-bottom: 10px;
+  }
+  
+  .category-list a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  .category-list a:hover {
+    background: rgba(205, 164, 94, 0.2);
+    color: #cda45e;
+  }
+  
+  .category-count {
+    background: rgba(205, 164, 94, 0.3);
+    color: #cda45e;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+  }
+  
+  /* 響應式設計 */
+  @media (max-width: 768px) {
+    .meta-info {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .share-buttons {
+      flex-wrap: wrap;
+    }
+    
+    .recent-post-item {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+
+{% endblock content %}

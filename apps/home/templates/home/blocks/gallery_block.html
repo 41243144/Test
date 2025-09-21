@@ -1,0 +1,30 @@
+{% load static wagtailimages_tags %}
+
+<!-- Gallery Section -->
+<section id="gallery" class="gallery section">
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>{{ value.title }}</h2>
+    {% if value.subtitle %}
+      <p>{{ value.subtitle }}</p>
+    {% endif %}
+  </div><!-- End Section Title -->
+
+  <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-0">
+      {% for gallery_image in value.gallery_images %}
+        <div class="col-lg-3 col-md-4">
+          <div class="gallery-item">
+            {% if gallery_image.image %}
+              {% image gallery_image.image original as img %}
+              {% image gallery_image.image width-400 as thumb %}
+              <a href="{{ img.url }}" class="glightbox" data-gallery="images-gallery" title="{{ gallery_image.caption|default:'' }}">
+                <img src="{{ thumb.url }}" alt="{{ gallery_image.alt_text|default:gallery_image.caption|default:'' }}" class="img-fluid">
+              </a>
+            {% endif %}
+          </div>
+        </div><!-- End Gallery Item -->
+      {% endfor %}
+    </div>
+  </div>
+</section>

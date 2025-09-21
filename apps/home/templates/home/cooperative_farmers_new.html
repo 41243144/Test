@@ -1,0 +1,844 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags site_settings_tags %}
+
+{% block body_class %}cooperative-farmers-page{% endblock %}
+
+{% block extra_css %}
+  {# 將網站基本設定套用到 <head>：標題/描述/Favicon/GA/GTM #}
+  {% render_meta_tags %}
+  
+  <style>
+    /* 合作小農頁面專屬樣式 */
+    
+    /* 頁面標題區域優化 */
+    .farmer-hero {
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('{% static "assets/img/page-title-bg.webp" %}');
+      background-size: cover;
+      background-position: center;
+      padding: 120px 0 80px 0;
+    }
+
+    /* 小農卡片設計 */
+    .farmer-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 15px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+    
+    .farmer-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(205, 164, 94, 0.2);
+      border-color: rgba(205, 164, 94, 0.3);
+    }
+
+    .farmer-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 4px solid #cda45e;
+      object-fit: cover;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #cda45e, #b8935a);
+      color: white;
+      font-size: 4rem;
+    }
+
+    .farmer-info {
+      padding: 25px;
+    }
+
+    .farmer-name {
+      color: #cda45e;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .farmer-location {
+      color: #999;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+    }
+
+    .farmer-specialty {
+      background: rgba(205, 164, 94, 0.2);
+      color: #cda45e;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin: 3px;
+      border: 1px solid rgba(205, 164, 94, 0.3);
+    }
+
+    /* 篩選器樣式 */
+    .filter-section {
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: 2px solid rgba(205, 164, 94, 0.3);
+      color: #cda45e;
+      padding: 8px 20px;
+      border-radius: 25px;
+      margin: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: #cda45e;
+      color: #fff;
+      border-color: #cda45e;
+    }
+
+    /* 聯絡小農按鈕 */
+    .contact-farmer-btn {
+      background: linear-gradient(135deg, #cda45e 0%, #b8935a 100%);
+      border: none;
+      color: white;
+      padding: 10px 25px;
+      border-radius: 25px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .contact-farmer-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(205, 164, 94, 0.3);
+      color: white;
+    }
+
+    /* 合作理念區域 */
+    .cooperation-values {
+      background: linear-gradient(135deg, rgba(205, 164, 94, 0.1) 0%, rgba(205, 164, 94, 0.05) 100%);
+      padding: 60px 0;
+      margin: 60px 0;
+    }
+
+    .value-item {
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .value-icon {
+      font-size: 3rem;
+      color: #cda45e;
+      margin-bottom: 20px;
+    }
+
+    .value-title {
+      color: #cda45e;
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .value-description {
+      color: #fff;
+      line-height: 1.6;
+    }
+
+    /* 統計數據 */
+    .stats-section {
+      background: rgba(0,0,0,0.8);
+      padding: 50px 0;
+      margin: 40px 0;
+      border-radius: 15px;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #cda45e;
+      display: block;
+    }
+
+    .stat-label {
+      color: #fff;
+      font-size: 1.1rem;
+      margin-top: 10px;
+    }
+
+    /* 搜尋框樣式 */
+    .search-box {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 25px;
+      padding: 12px 20px;
+      color: #fff;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: #cda45e;
+      box-shadow: 0 0 0 0.2rem rgba(205, 164, 94, 0.25);
+    }
+
+    .search-box::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* 小農故事展開按鈕 */
+    .story-toggle {
+      background: transparent;
+      border: 1px solid rgba(205, 164, 94, 0.5);
+      color: #cda45e;
+      padding: 5px 15px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .story-toggle:hover {
+      background: rgba(205, 164, 94, 0.2);
+    }
+
+    .farmer-story {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: none;
+    }
+
+    .farmer-story.show {
+      display: block;
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    /* 動畫效果 */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .fade-in-up {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* 熱銷商品卡片樣式 */
+    .hot-products {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,193,7,0.3);
+    }
+
+    .product-mini-card {
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-mini-card:hover {
+      background: rgba(255,255,255,0.12);
+      transform: translateY(-2px);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 60px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-image .no-image {
+      width: 100%;
+      height: 100%;
+      background: rgba(205, 164, 94, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #cda45e;
+      font-size: 1.5rem;
+    }
+
+    .product-info {
+      text-align: center;
+    }
+
+    .product-name {
+      color: #fff;
+      font-size: 0.8rem;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    .product-price {
+      color: #cda45e;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    .sales-count {
+      color: #999;
+      font-size: 0.7rem;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .product-link {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .stock-status .badge {
+      font-size: 0.6rem;
+      padding: 2px 6px;
+    }
+
+    /* 響應式設計 */
+    @media (max-width: 768px) {
+      .farmer-card {
+        margin-bottom: 30px;
+      }
+      
+      .stat-number {
+        font-size: 2rem;
+      }
+      
+      .filter-section {
+        text-align: center;
+      }
+    }
+  </style>
+{% endblock extra_css %}
+
+{% block content %}
+<main class="main">
+    <!-- 使用 StreamField 區塊 -->
+    {% for block in page.body %}
+        {% include_block block %}
+    {% empty %}
+        <!-- 如果沒有任何區塊，顯示預設的合作小農內容 -->
+
+        <!-- Page Title -->
+        <div class="page-title farmer-hero position-relative" data-aos="fade">
+          <div class="container position-relative">
+            <h1 class="text-light text-center">合作小農夥伴</h1>
+            <p class="text-center text-light fs-5">與在地小農攜手合作，為您帶來最新鮮優質的農產品</p>
+            <nav class="breadcrumbs">
+              <ol>
+                <li><a href="/">首頁</a></li>
+                <li class="current">合作小農</li>
+              </ol>
+            </nav>
+          </div>
+        </div><!-- End Page Title -->
+
+        <!-- 合作理念區域 -->
+        <section class="cooperation-values">
+          <div class="container" data-aos="fade-up">
+            <div class="section-title text-center mb-5">
+              <h2 class="text-light">我們的合作理念</h2>
+              <p class="text-light">支持在地農業，促進永續發展，為消費者提供安心食材</p>
+            </div>
+            
+            <div class="row">
+              <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="value-item">
+                  <div class="value-icon">
+                    <i class="bi bi-heart"></i>
+                  </div>
+                  <h4 class="value-title">用心栽培</h4>
+                  <p class="value-description">
+                    每位合作小農都秉持著對土地的敬愛，採用友善環境的耕作方式，
+                    不使用過量農藥，讓作物在自然環境中健康成長。
+                  </p>
+                </div>
+              </div>
+              
+              <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="value-item">
+                  <div class="value-icon">
+                    <i class="bi bi-shield-check"></i>
+                  </div>
+                  <h4 class="value-title">品質保證</h4>
+                  <p class="value-description">
+                    嚴格的品質管控流程，從種植、採收到包裝，每個環節都經過仔細檢驗，
+                    確保每份農產品都達到最高品質標準。
+                  </p>
+                </div>
+              </div>
+              
+              <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="value-item">
+                  <div class="value-icon">
+                    <i class="bi bi-truck"></i>
+                  </div>
+                  <h4 class="value-title">新鮮直送</h4>
+                  <p class="value-description">
+                    建立完善的冷鏈配送系統，從農場直接配送到消費者手中，
+                    縮短中間流程，確保農產品的新鮮度和營養價值。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 統計數據 -->
+        <section class="stats-section" data-aos="fade-up">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                  <span class="stat-number" data-target="{{ vendors.count }}">0</span>
+                  <p class="stat-label">合作小農</p>
+                </div>
+              </div>
+              
+              <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                  <span class="stat-number" data-target="{{ categories.count }}">0</span>
+                  <p class="stat-label">產品分類</p>
+                </div>
+              </div>
+              
+              <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                  <span class="stat-number" data-target="15">0</span>
+                  <p class="stat-label">合作縣市</p>
+                </div>
+              </div>
+              
+              <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                  <span class="stat-number" data-target="98">0</span>
+                  <p class="stat-label">滿意度 %</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 篩選與搜尋區域 -->
+        <section id="farmer-filters" class="section py-4">
+          <div class="container">
+            <div class="filter-section" data-aos="fade-up">
+              <div class="row align-items-center">
+                <div class="col-lg-4 mb-3">
+                  <input type="text" class="search-box" placeholder="搜尋小農或農產品..." id="farmerSearch">
+                </div>
+                <div class="col-lg-8">
+                  <div class="d-flex flex-wrap">
+                    <button class="filter-btn active" data-filter="all">全部小農</button>
+                    {% for category in categories %}
+                    <button class="filter-btn" data-filter="category-{{ category.id }}">{{ category.name }}</button>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 合作小農列表 -->
+        <section id="farmers-list" class="section py-5">
+          <div class="container">
+            <div class="row gy-4" id="farmersContainer">
+              
+              {% for vendor in vendors %}
+              <div class="col-lg-4 col-md-6 farmer-item" 
+                   data-category="{% if vendor.category %}category-{{ vendor.category.id }}{% endif %}" 
+                   data-aos="fade-up" 
+                   data-aos-delay="{% cycle 100 200 300 %}">
+                <div class="farmer-card position-relative">
+                  
+                  <div class="text-center mt-4">
+                    <div class="farmer-avatar">
+                      <i class="bi bi-person-circle"></i>
+                    </div>
+                  </div>
+                  
+                  <div class="farmer-info">
+                    <h4 class="farmer-name">{{ vendor.name }}</h4>
+                    <p class="farmer-location">
+                      <i class="bi bi-geo-alt"></i> {% if vendor.address %}{{ vendor.address|truncatechars:30 }}{% else %}地址未提供{% endif %}
+                    </p>
+                    
+                    <div class="mb-3">
+                      {% if vendor.category %}
+                      <span class="farmer-specialty">{{ vendor.category.name }}</span>
+                      {% endif %}
+                    </div>
+                    
+                    <p class="text-light small mb-3">
+                      {% if vendor.intro %}
+                        {{ vendor.intro|truncatechars:100 }}
+                      {% elif vendor.description %}
+                        {{ vendor.description|truncatechars:100 }}
+                      {% else %}
+                        這位商家正在努力為您提供優質的產品和服務。
+                      {% endif %}
+                    </p>
+                    
+                    <button class="story-toggle" onclick="toggleStory(this)">
+                      <i class="bi bi-book"></i> 了解更多故事
+                    </button>
+                    
+                    <div class="farmer-story">
+                      <p class="text-light small">
+                        {% if vendor.description %}
+                          {{ vendor.description }}
+                        {% elif vendor.intro %}
+                          {{ vendor.intro }}
+                        {% else %}
+                          這位商家正在努力為您提供優質的產品和服務。
+                        {% endif %}
+                      </p>
+                      <div class="mt-2">
+                        {% if vendor.phone %}
+                        <p class="text-light small"><i class="bi bi-phone"></i> 電話：{{ vendor.phone }}</p>
+                        {% endif %}
+                        {% if vendor.user.email %}
+                        <p class="text-light small"><i class="bi bi-envelope"></i> 信箱：{{ vendor.user.email }}</p>
+                        {% endif %}
+                        {% if vendor.address %}
+                        <p class="text-light small"><i class="bi bi-geo-alt"></i> 地址：{{ vendor.address }}</p>
+                        {% endif %}
+                      </div>
+                      
+                      <!-- 熱銷商品區域 -->
+                      {% if vendor.top_products %}
+                      <div class="hot-products mt-3">
+                        <h6 class="text-warning"><i class="bi bi-fire"></i> 熱銷商品</h6>
+                        <div class="row g-2">
+                          {% for product in vendor.top_products %}
+                          <div class="col-6">
+                            <div class="product-mini-card">
+                              <div class="product-image">
+                                {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+                                {% else %}
+                                <div class="no-image">
+                                  <i class="bi bi-image"></i>
+                                </div>
+                                {% endif %}
+                              </div>
+                              <div class="product-info">
+                                <h6 class="product-name">{{ product.name|truncatechars:15 }}</h6>
+                                <p class="product-price">NT$ {{ product.price|floatformat:0 }}</p>
+                                {% if product.sales_count > 0 %}
+                                <small class="sales-count">已售 {{ product.sales_count }} 件</small>
+                                {% endif %}
+                                <div class="stock-status">
+                                  {% if product.stock_status == 'in_stock' %}
+                                  <span class="badge bg-success">現貨供應</span>
+                                  {% elif product.stock_status == 'low_stock' %}
+                                  <span class="badge bg-warning">少量現貨</span>
+                                  {% else %}
+                                  <span class="badge bg-danger">缺貨中</span>
+                                  {% endif %}
+                                </div>
+                                {% if product.stock > 0 %}
+                                <button class="btn btn-sm btn-warning mt-1 mini-add-to-cart" 
+                                        data-product-id="{{ product.id }}"
+                                        style="font-size: 0.7rem; padding: 2px 8px;">
+                                  <i class="bi bi-cart-plus"></i>
+                                </button>
+                                {% endif %}
+                              </div>
+                              <a href="{% url 'home:product_detail' vendor.id product.id %}" class="product-link"></a>
+                            </div>
+                          </div>
+                          {% endfor %}
+                        </div>
+                      </div>
+                      {% endif %}
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                      <a href="{% url 'home:vendor_products' vendor.id %}" class="contact-farmer-btn">
+                        <i class="bi bi-eye"></i> 查看全部商品
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% empty %}
+              <div class="col-12 text-center">
+                <p class="text-light">目前還沒有合作小農，敬請期待！</p>
+              </div>
+              {% endfor %}
+
+            </div>
+          </div>
+        </section>
+
+    {% endfor %}
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化 AOS 動畫
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 1000,
+            easing: 'ease-in-out',
+            once: true
+        });
+    }
+    
+    // 統計數字動畫
+    function animateNumbers() {
+      const statNumbers = document.querySelectorAll('.stat-number');
+      
+      statNumbers.forEach(number => {
+        const target = parseInt(number.getAttribute('data-target'));
+        const increment = target / 100;
+        let current = 0;
+        
+        const updateNumber = () => {
+          if (current < target) {
+            current += increment;
+            number.textContent = Math.floor(current);
+            requestAnimationFrame(updateNumber);
+          } else {
+            number.textContent = target;
+          }
+        };
+        
+        updateNumber();
+      });
+    }
+
+    // 篩選功能
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const farmerItems = document.querySelectorAll('.farmer-item');
+    
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // 移除所有按鈕的 active 類別
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        // 為當前按鈕添加 active 類別
+        this.classList.add('active');
+        
+        const filterValue = this.getAttribute('data-filter');
+        
+        farmerItems.forEach(item => {
+          if (filterValue === 'all' || item.getAttribute('data-category').includes(filterValue)) {
+            item.style.display = 'block';
+            item.style.opacity = '0';
+            setTimeout(() => {
+              item.style.opacity = '1';
+            }, 100);
+          } else {
+            item.style.opacity = '0';
+            setTimeout(() => {
+              item.style.display = 'none';
+            }, 300);
+          }
+        });
+      });
+    });
+
+    // 搜尋功能
+    const searchInput = document.getElementById('farmerSearch');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          
+          farmerItems.forEach(item => {
+            const farmerName = item.querySelector('.farmer-name') ? item.querySelector('.farmer-name').textContent.toLowerCase() : '';
+            const specialties = Array.from(item.querySelectorAll('.farmer-specialty'))
+              .map(specialty => specialty.textContent.toLowerCase()).join(' ');
+            
+            if (farmerName.includes(searchTerm) || specialties.includes(searchTerm)) {
+              item.style.display = 'block';
+              item.style.opacity = '1';
+            } else {
+              item.style.opacity = '0';
+              setTimeout(() => {
+                item.style.display = 'none';
+              }, 300);
+            }
+          });
+        });
+    }
+
+    // 統計數字觸發動畫（當進入視窗時）
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateNumbers();
+          observer.unobserve(entry.target);
+        }
+      });
+    });
+
+    const statsSection = document.querySelector('.stats-section');
+    if (statsSection) {
+      observer.observe(statsSection);
+    }
+
+    // 迷你購物車功能
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('mini-add-to-cart') || e.target.closest('.mini-add-to-cart')) {
+            e.preventDefault();
+            
+            const button = e.target.classList.contains('mini-add-to-cart') ? e.target : e.target.closest('.mini-add-to-cart');
+            const productId = button.getAttribute('data-product-id');
+            
+            // 顯示載入狀態
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+            button.disabled = true;
+            
+            fetch('{% url "cart:add_to_cart" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.innerHTML = '<i class="bi bi-check"></i>';
+                    button.classList.remove('btn-warning');
+                    button.classList.add('btn-success');
+                    
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.classList.remove('btn-success');
+                        button.classList.add('btn-warning');
+                        button.disabled = false;
+                    }, 1500);
+                    
+                    showMiniNotification(data.message, 'success');
+                } else {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    showMiniNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                showMiniNotification('加入購物車失敗', 'error');
+            });
+        }
+    });
+
+});
+
+// 小農故事展開/收合功能
+function toggleStory(button) {
+  const storyDiv = button.nextElementSibling;
+  const icon = button.querySelector('i');
+  
+  if (storyDiv && storyDiv.classList.contains('show')) {
+    storyDiv.classList.remove('show');
+    button.innerHTML = '<i class="bi bi-book"></i> 了解更多故事';
+  } else if (storyDiv) {
+    storyDiv.classList.add('show');
+    button.innerHTML = '<i class="bi bi-book-fill"></i> 收合故事';
+  }
+}
+
+// 全域化函數
+window.toggleStory = toggleStory;
+
+// 獲取 CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// 顯示迷你通知
+function showMiniNotification(message, type = 'info') {
+    const alertClass = type === 'success' ? 'alert-success' : type === 'error' ? 'alert-danger' : 'alert-info';
+    
+    const notification = document.createElement('div');
+    notification.className = `alert ${alertClass}`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 9999;
+        animation: slideInRight 0.3s ease-out;
+        min-width: 250px;
+        font-size: 0.9rem;
+    `;
+    notification.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center">
+            <span>${message}</span>
+            <button type="button" class="btn-close btn-close-white ms-2" aria-label="Close"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 關閉按鈕功能
+    notification.querySelector('.btn-close').addEventListener('click', function() {
+        notification.remove();
+    });
+    
+    // 自動移除
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 2000);
+}
+</script>
+
+{% endblock content %}

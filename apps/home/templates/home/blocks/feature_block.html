@@ -1,0 +1,25 @@
+{% load math_filters %}
+<!-- Why Us Section -->
+<section id="why-us" class="why-us section">
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>{{ value.title }}</h2>
+    {% if value.subtitle %}
+      <p>{{ value.subtitle }}</p>
+    {% endif %}
+  </div><!-- End Section Title -->
+
+  <div class="container">
+    <div class="row gy-4">
+      {% for feature in value.features %}
+        <div class="col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:1|mul:100 }}">
+          <div class="card-item">
+            <span>{{ feature.number|default:forloop.counter|stringformat:"02d" }}</span>
+            <h4><a href="" class="stretched-link">{{ feature.title }}</a></h4>
+            <p>{{ feature.description }}</p>
+          </div>
+        </div><!-- Card Item -->
+      {% endfor %}
+    </div>
+  </div>
+</section>

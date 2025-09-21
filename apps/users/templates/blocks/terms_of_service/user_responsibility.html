@@ -1,0 +1,19 @@
+{% load wagtailcore_tags %}
+<!-- 用戶責任區塊 -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+        <h3 class="card-title mb-3"><i class="fas fa-user-check me-2 text-primary"></i>{{ value.title }}</h3>
+        
+        {{ value.content|richtext }}
+        
+        <ol class="mb-3">
+            {% for responsibility in value.responsibilities %}
+                <li><strong>{{ responsibility.title }}：</strong>{{ responsibility.description }}</li>
+            {% endfor %}
+        </ol>
+
+        {% for block in value.extra %}
+            {% include_block block %}
+        {% endfor %}
+    </div>
+</div>

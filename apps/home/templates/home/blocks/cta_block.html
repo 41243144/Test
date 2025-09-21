@@ -1,0 +1,15 @@
+<!-- Call to Action Section -->
+<section class="cta section {% if value.background_color %}{{ value.background_color }}{% endif %}">
+  <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
+    <h2>{{ value.title }}</h2>
+    {% if value.subtitle %}
+      <h3>{{ value.subtitle }}</h3>
+    {% endif %}
+    {% if value.description %}
+      <p>{{ value.description }}</p>
+    {% endif %}
+    <div class="mt-4">
+      <a href="{{ value.button_url }}" class="btn {{ value.button_style }} btn-lg">{{ value.button_text }}</a>
+    </div>
+  </div>
+</section>

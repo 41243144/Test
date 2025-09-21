@@ -1,0 +1,46 @@
+{# templates/includes/_head.html #}
+{% load static wagtailcore_tags site_settings_tags %}
+
+<meta charset="utf-8" />
+
+{% if page.seo_title or page.title %}
+  {% render_meta_tags title=page.seo_title|default:page.title %}
+{% else %}
+  {% render_meta_tags %}
+{% endif %}
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+{% if request.in_preview_panel %}
+  <base target="_blank">
+{% endif %}
+
+<!-- Favicons -->
+{% get_site_setting 'favicon' as site_favicon %}
+{% if site_favicon %}
+  <link href="{{ site_favicon.file.url }}" rel="icon">
+  <link href="{{ site_favicon.file.url }}" rel="apple-touch-icon">
+{% else %}
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+{% endif %}
+
+<!-- Fonts preload -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto…&display=swap" rel="stylesheet">
+
+<!-- Vendor CSS -->
+<link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+<link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+<link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+<link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+<!-- Font Awesome for icons -->
+<link href="{% static 'assets/vendor/font-awesome/css/all.min.css' %}" rel="stylesheet">
+
+<!-- Main CSS -->
+<link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+
+{% block extra_css %}{% endblock %}

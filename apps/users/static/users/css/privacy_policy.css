@@ -1,0 +1,43 @@
+.card {
+    border: none;
+    border-radius: 10px;
+}
+
+.card-title {
+    font-weight: 600;
+}
+
+.text-primary {
+    color: var(--accent-color) !important;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.section {
+    padding: 60px 0;
+}
+
+.lead {
+    font-size: 1.1rem;
+    color: #6c757d;
+}
+
+ul li, ol li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+h5 {
+    color: var(--accent-color);
+    font-weight: 500;
+}
+
+.list-unstyled li {
+    color: #495057;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}

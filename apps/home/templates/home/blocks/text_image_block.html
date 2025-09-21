@@ -1,0 +1,30 @@
+{% load static wagtailimages_tags wagtailcore_tags %}
+
+<!-- Text Image Section -->
+<section class="text-image section bg-dark">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row gy-4 align-items-center">
+      {% if value.image_position == 'left' %}
+        <div class="col-lg-6 order-1">
+          {% if value.image %}
+            {% image value.image width-600 class="img-fluid" %}
+          {% endif %}
+        </div>
+        <div class="col-lg-6 order-2">
+          <h3>{{ value.title }}</h3>
+          {{ value.content|richtext }}
+        </div>
+      {% else %}
+        <div class="col-lg-6 order-2 order-lg-1">
+          <h3>{{ value.title }}</h3>
+          {{ value.content|richtext }}
+        </div>
+        <div class="col-lg-6 order-1 order-lg-2">
+          {% if value.image %}
+            {% image value.image width-600 class="img-fluid" %}
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>

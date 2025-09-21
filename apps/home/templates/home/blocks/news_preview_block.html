@@ -1,0 +1,134 @@
+{% load static %}
+{% load math_filters %}
+
+<!-- News Section -->
+<section id="news" class="news section">
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>{{ value.title }}</h2>
+    {% if value.subtitle %}
+      <p>{{ value.subtitle }}</p>
+    {% endif %}
+  </div><!-- End Section Title -->
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row gy-4">
+      
+      <!-- 這裡應該顯示真實的新聞內容，但目前先用示例 -->
+      <!-- 在實際實作中，你需要在 view 中查詢新聞資料並傳入 template -->
+      {% comment %}
+      {% for news in latest_news|slice:":value.news_count" %}
+        <div class="col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:1|mul:100 }}">
+          <article class="news-item">
+            <div class="news-img">
+              {% if news.featured_image %}
+                {% image news.featured_image width-400 alt="" class="img-fluid" %}
+              {% endif %}
+              <div class="news-date">
+                <span class="day">{{ news.first_published_at|date:"d" }}</span>
+                <span class="month">{{ news.first_published_at|date:"M" }}</span>
+              </div>
+            </div>
+            <div class="news-content">
+              <div class="news-meta">
+                <span class="category">{{ news.category }}</span>
+                <span class="date">{{ news.first_published_at|date:"Y/m/d" }}</span>
+              </div>
+              <h3><a href="{{ news.url }}">{{ news.title }}</a></h3>
+              <p>{{ news.summary|truncatechars:120 }}</p>
+              {% if news.author %}
+                <div class="news-author">
+                  {% if news.author.avatar %}
+                    {% image news.author.avatar width-70 class="author-img" %}
+                  {% endif %}
+                  <span class="author-name">{{ news.author.name }}</span>
+                </div>
+              {% endif %}
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+      {% endcomment %}
+      
+      <!-- 目前先顯示示例內容 -->
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+        <article class="news-item">
+          <div class="news-img">
+            <img src="{% static 'assets/img/blog/blog-1.jpg' %}" alt="" class="img-fluid">
+            <div class="news-date">
+              <span class="day">22</span>
+              <span class="month">八月</span>
+            </div>
+          </div>
+          <div class="news-content">
+            <div class="news-meta">
+              <span class="category">平台公告</span>
+              <span class="date">2024/08/22</span>
+            </div>
+            <h3><a href="#">平台系統維護升級通知</a></h3>
+            <p>為提供更好的服務品質，我們將於 8/25 凌晨進行系統維護升級...</p>
+            <div class="news-author">
+              <img src="{% static 'assets/img/testimonials/testimonials-1.jpg' %}" alt="" class="author-img">
+              <span class="author-name">尚虎雲團隊</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+        <article class="news-item">
+          <div class="news-img">
+            <img src="{% static 'assets/img/blog/blog-2.jpg' %}" alt="" class="img-fluid">
+            <div class="news-date">
+              <span class="day">20</span>
+              <span class="month">八月</span>
+            </div>
+          </div>
+          <div class="news-content">
+            <div class="news-meta">
+              <span class="category">農業新知</span>
+              <span class="date">2024/08/20</span>
+            </div>
+            <h3><a href="#">智慧農業技術應用趨勢</a></h3>
+            <p>隨著物聯網、大數據等技術日趨成熟，智慧農業正在改變傳統農業的面貌...</p>
+            <div class="news-author">
+              <img src="{% static 'assets/img/testimonials/testimonials-2.jpg' %}" alt="" class="author-img">
+              <span class="author-name">農業專家 李博士</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+        <article class="news-item">
+          <div class="news-img">
+            <img src="{% static 'assets/img/blog/blog-3.jpg' %}" alt="" class="img-fluid">
+            <div class="news-date">
+              <span class="day">18</span>
+              <span class="month">八月</span>
+            </div>
+          </div>
+          <div class="news-content">
+            <div class="news-meta">
+              <span class="category">成功案例</span>
+              <span class="date">2024/08/18</span>
+            </div>
+            <h3><a href="#">小農王大哥的有機蔬菜成功故事</a></h3>
+            <p>透過尚虎雲平台，王大哥的有機蔬菜銷量提升了 300%...</p>
+            <div class="news-author">
+              <img src="{% static 'assets/img/testimonials/testimonials-3.jpg' %}" alt="" class="author-img">
+              <span class="author-name">王大哥</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- 查看更多按鈕 -->
+    {% if value.show_more_button and value.more_button_text %}
+      <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="700">
+        <a href="{% if value.more_button_url %}{{ value.more_button_url }}{% else %}#{% endif %}" class="btn-more-news">{{ value.more_button_text }}</a>
+      </div>
+    {% endif %}
+  </div>
+</section>

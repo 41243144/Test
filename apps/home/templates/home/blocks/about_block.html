@@ -1,0 +1,29 @@
+{% load static wagtailimages_tags wagtailcore_tags %}
+
+<!-- About Section -->
+<section id="about" class="about section">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row gy-4">
+      <div class="col-lg-6 order-1 order-lg-2">
+        {% if value.image %}
+          {% image value.image width-600 class="img-fluid about-img" %}
+        {% else %}
+          <img src="{% static 'assets/img/about.jpg' %}" class="img-fluid about-img" alt="">
+        {% endif %}
+      </div>
+      <div class="col-lg-6 order-2 order-lg-1 content">
+        <h3>{{ value.title }}</h3>
+        <div class="fst-italic">
+          {{ value.description|richtext }}
+        </div>
+        {% if value.features %}
+          <ul>
+            {% for feature in value.features %}
+              <li><i class="bi bi-check2-all"></i> <span>{{ feature.feature_text }}</span></li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>

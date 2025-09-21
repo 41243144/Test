@@ -1,0 +1,53 @@
+{% load static wagtailimages_tags %}
+
+<!-- Products Section -->
+<section id="products" class="menu section">
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>{{ value.title }}</h2>
+    {% if value.subtitle %}
+      <p>{{ value.subtitle }}</p>
+    {% endif %}
+  </div><!-- End Section Title -->
+
+  <div class="container isotope-layout" data-default-filter="*" data-layout="masonry" data-sort="original-order">
+
+    <!-- 收集所有分類 -->
+    {% regroup value.products by category as grouped_products %}
+    
+    <div class="row" data-aos="fade-up" data-aos-delay="100">
+      <div class="col-lg-12 d-flex justify-content-center">
+        <ul class="menu-filters isotope-filters">
+          <li data-filter="*" class="filter-active">全部</li>
+          {% for group in grouped_products %}
+            <li data-filter=".filter-{{ group.grouper }}">
+              {% if group.grouper == 'vegetables' %}蔬菜類
+              {% elif group.grouper == 'fruits' %}水果類
+              {% elif group.grouper == 'grains' %}穀物類
+              {% else %}其他{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div><!-- Menu Filters -->
+
+    <div class="row isotope-container" data-aos="fade-up" data-aos-delay="200">
+      {% for product in value.products %}
+        <div class="col-lg-6 menu-item isotope-item filter-{{ product.category }}">
+          {% if product.image %}
+            {% image product.image width-400 class="menu-img" %}
+          {% else %}
+            <img src="{% static 'assets/img/menu/lobster-bisque.jpg' %}" class="menu-img" alt="">
+          {% endif %}
+          <div class="menu-content">
+            <a href="#">{{ product.name }}</a><span>{{ product.price }}</span>
+          </div>
+          <div class="menu-ingredients">
+            {{ product.description }}
+          </div>
+        </div><!-- Menu Item -->
+      {% endfor %}
+    </div><!-- Menu Container -->
+
+  </div>
+</section>

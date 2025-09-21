@@ -1,0 +1,709 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags site_settings_tags %}
+
+{% block body_class %}vendor-products-page{% endblock %}
+
+{% block extra_css %}
+  {# 將網站基本設定套用到 <head>：標題/描述/Favicon/GA/GTM #}
+  {% render_meta_tags %}
+  
+  <style>
+    /* 小農商品列表頁面專屬樣式 */
+    
+    /* 頁面標題區域 */
+    .vendor-hero {
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{% static "assets/img/page-title-bg.webp" %}');
+      background-size: cover;
+      background-position: center;
+      padding: 120px 0 80px 0;
+    }
+
+// 加入購物車功能
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('add-to-cart-btn') || e.target.closest('.add-to-cart-btn')) {
+        e.preventDefault();
+        
+        const button = e.target.classList.contains('add-to-cart-btn') ? e.target : e.target.closest('.add-to-cart-btn');
+        const productId = button.getAttribute('data-product-id');
+        
+        // 顯示載入狀態
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="bi bi-hourglass-split"></i> 加入中...';
+        button.disabled = true;
+        
+        fetch('{% url "cart:add_to_cart" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                quantity: 1
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                button.innerHTML = '<i class="bi bi-check-circle"></i> 已加入';
+                button.style.background = '#28a745';
+                button.style.borderColor = '#28a745';
+                button.style.color = '#fff';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = 'transparent';
+                    button.style.borderColor = '#cda45e';
+                    button.style.color = '#cda45e';
+                    button.disabled = false;
+                }, 2000);
+                
+                showNotification(data.message, 'success');
+                updateCartCount(data.total_items);
+            } else {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            showNotification('加入購物車失敗，請稍後再試', 'error');
+        });
+    }
+});
+
+// 獲取 CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// 更新購物車數量
+function updateCartCount(count) {
+    const cartCountElements = document.querySelectorAll('.cart-count');
+    cartCountElements.forEach(element => {
+        element.textContent = count;
+        if (count > 0) {
+            element.style.display = 'inline';
+        }
+    });
+}
+
+// 顯示通知
+function showNotification(message, type = 'info') {
+    const alertClass = type === 'success' ? 'alert-success' : type === 'error' ? 'alert-danger' : 'alert-info';
+    
+    const notification = document.createElement('div');
+    notification.className = `alert ${alertClass} notification-toast`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 9999;
+        animation: slideInRight 0.3s ease-out;
+        min-width: 300px;
+    `;
+    notification.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center">
+            <span>${message}</span>
+            <button type="button" class="btn-close ms-2" aria-label="Close"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 關閉按鈕功能
+    notification.querySelector('.btn-close').addEventListener('click', function() {
+        notification.remove();
+    });
+    
+    // 自動移除
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 3000);
+}
+
+// CSS 動畫樣式
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+`;
+document.head.appendChild(style);* 小農資訊卡片 */
+    .vendor-info-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 40px;
+    }
+
+    .vendor-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #cda45e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #cda45e, #b8935a);
+      color: white;
+      font-size: 2.5rem;
+      margin-right: 20px;
+    }
+
+    /* 商品卡片設計 */
+    .product-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 15px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(205, 164, 94, 0.2);
+      border-color: rgba(205, 164, 94, 0.3);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image img {
+      transform: scale(1.05);
+    }
+
+    .product-image .no-image {
+      width: 100%;
+      height: 100%;
+      background: rgba(205, 164, 94, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #cda45e;
+      font-size: 3rem;
+    }
+
+    .product-info {
+      padding: 20px;
+    }
+
+    .product-name {
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .product-description {
+      color: #ccc;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-price {
+      color: #cda45e;
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .sales-badge {
+      background: rgba(205, 164, 94, 0.2);
+      color: #cda45e;
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+    }
+
+    .stock-badge {
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 15px;
+    }
+
+    .stock-in {
+      background: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+    }
+
+    .stock-low {
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+    }
+
+    .stock-out {
+      background: rgba(220, 53, 69, 0.2);
+      color: #dc3545;
+    }
+
+    /* 按鈕設計 */
+    .btn-view-product {
+      background: linear-gradient(135deg, #cda45e 0%, #b8935a 100%);
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+    }
+
+    .btn-view-product:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(205, 164, 94, 0.3);
+      color: white;
+    }
+
+    /* 篩選與排序 */
+    .filter-sort-section {
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .form-select, .form-control {
+      background-color: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 8px;
+    }
+
+    .form-select:focus, .form-control:focus {
+      background-color: rgba(255,255,255,0.15);
+      border-color: #cda45e;
+      box-shadow: 0 0 0 0.2rem rgba(205, 164, 94, 0.25);
+      color: #fff;
+    }
+
+    .form-select option {
+      background-color: #1a1a1a;
+      color: #fff;
+    }
+
+    /* 搜尋框 */
+    .search-box {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 25px;
+      padding: 12px 20px;
+      color: #fff;
+      width: 100%;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: #cda45e;
+      box-shadow: 0 0 0 0.2rem rgba(205, 164, 94, 0.25);
+    }
+
+    .search-box::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* 分頁樣式 */
+    .pagination {
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .page-link {
+      background-color: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+      color: #cda45e;
+    }
+
+    .page-link:hover {
+      background-color: rgba(205, 164, 94, 0.2);
+      border-color: #cda45e;
+      color: #cda45e;
+    }
+
+    .page-item.active .page-link {
+      background-color: #cda45e;
+      border-color: #cda45e;
+      color: #fff;
+    }
+
+    /* 統計資訊 */
+    .stats-info {
+      background: rgba(205, 164, 94, 0.1);
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .stats-number {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #cda45e;
+    }
+
+    .stats-label {
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    /* 響應式設計 */
+    @media (max-width: 768px) {
+      .vendor-info-card .d-flex {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .vendor-avatar {
+        margin: 0 auto 15px auto;
+      }
+      
+      .filter-sort-section .row > div {
+        margin-bottom: 15px;
+      }
+    }
+  </style>
+{% endblock extra_css %}
+
+{% block content %}
+<main class="main">
+    <!-- Page Title -->
+    <div class="page-title vendor-hero position-relative" data-aos="fade">
+      <div class="container position-relative">
+        <h1 class="text-light text-center">{{ vendor.name }} 的商品</h1>
+        <p class="text-center text-light fs-5">發現更多優質農產品</p>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="/">首頁</a></li>
+            <li><a href="{% url 'home:cooperative_farmers' %}">合作小農</a></li>
+            <li class="current">{{ vendor.name }}</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- 小農資訊區域 -->
+    <section class="section py-4">
+      <div class="container">
+        <div class="vendor-info-card" data-aos="fade-up">
+          <div class="d-flex align-items-center">
+            <div class="vendor-avatar">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="flex-grow-1">
+              <h3 class="text-light">{{ vendor.name }}</h3>
+              <p class="text-light mb-2">
+                {% if vendor.intro %}{{ vendor.intro }}{% elif vendor.description %}{{ vendor.description }}{% else %}提供優質農產品{% endif %}
+              </p>
+              <div class="d-flex flex-wrap gap-3">
+                {% if vendor.category %}
+                <span class="badge bg-warning text-dark">{{ vendor.category.name }}</span>
+                {% endif %}
+                {% if vendor.address %}
+                <small class="text-light"><i class="bi bi-geo-alt"></i> {{ vendor.address|truncatechars:20 }}</small>
+                {% endif %}
+                {% if vendor.phone %}
+                <small class="text-light"><i class="bi bi-phone"></i> {{ vendor.phone }}</small>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 統計資訊 -->
+        <div class="stats-info" data-aos="fade-up">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="stats-number">{{ total_products }}</div>
+              <div class="stats-label">商品總數</div>
+            </div>
+            <div class="col-md-4">
+              <div class="stats-number">{{ vendor.category.name|default:"多樣化" }}</div>
+              <div class="stats-label">商品類型</div>
+            </div>
+            <div class="col-md-4">
+              <div class="stats-number">優質</div>
+              <div class="stats-label">品質保證</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 篩選與搜尋區域 -->
+    <section class="section py-2">
+      <div class="container">
+        <div class="filter-sort-section" data-aos="fade-up">
+          <div class="row align-items-center">
+            <div class="col-lg-6 col-md-8 mb-3">
+              <input type="text" class="search-box" placeholder="搜尋商品..." id="productSearch">
+            </div>
+            <div class="col-lg-3 col-md-4 mb-3">
+              <select class="form-select" id="sortSelect">
+                <option value="default">排序方式</option>
+                <option value="popular">熱銷優先</option>
+                <option value="price-low">價格：低到高</option>
+                <option value="price-high">價格：高到低</option>
+                <option value="newest">最新上架</option>
+              </select>
+            </div>
+            <div class="col-lg-3 col-md-12 mb-3">
+              <select class="form-select" id="stockFilter">
+                <option value="all">所有商品</option>
+                <option value="in-stock">現貨供應</option>
+                <option value="low-stock">少量現貨</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 商品列表 -->
+    <section id="products-list" class="section py-4">
+      <div class="container">
+        <div class="row gy-4" id="productsContainer">
+          
+          {% for product in products %}
+          <div class="col-lg-3 col-md-4 col-sm-6 product-item" 
+               data-price="{{ product.price }}" 
+               data-sales="{{ product.sales_count }}"
+               data-stock="{{ product.stock_status }}"
+               data-aos="fade-up" 
+               data-aos-delay="{% cycle 100 200 300 400 %}">
+            <div class="product-card">
+              
+              <div class="product-image">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                <div class="no-image">
+                  <i class="bi bi-image"></i>
+                </div>
+                {% endif %}
+              </div>
+              
+              <div class="product-info">
+                <h5 class="product-name">{{ product.name }}</h5>
+                {% if product.description %}
+                <p class="product-description">{{ product.description|truncatechars:60 }}</p>
+                {% endif %}
+                
+                <div class="product-price">NT$ {{ product.price|floatformat:0 }}</div>
+                
+                <div class="product-meta">
+                  {% if product.sales_count > 0 %}
+                  <span class="sales-badge">已售 {{ product.sales_count }} 件</span>
+                  {% else %}
+                  <span class="sales-badge">新品上架</span>
+                  {% endif %}
+                  
+                  {% if product.stock_status == 'in_stock' %}
+                  <span class="stock-badge stock-in">現貨供應</span>
+                  {% elif product.stock_status == 'low_stock' %}
+                  <span class="stock-badge stock-low">少量現貨</span>
+                  {% else %}
+                  <span class="stock-badge stock-out">缺貨中</span>
+                  {% endif %}
+                </div>
+                
+                <a href="{% url 'home:product_detail' vendor.id product.id %}" class="btn-view-product">
+                  <i class="bi bi-eye"></i> 查看詳情
+                </a>
+                {% if product.stock > 0 %}
+                <button class="btn btn-sm btn-warning mt-2 add-to-cart-btn" 
+                        data-product-id="{{ product.id }}"
+                        style="width: 100%; background: transparent; border: 1px solid #cda45e; color: #cda45e; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem;">
+                  <i class="bi bi-cart-plus"></i> 加入購物車
+                </button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <div class="col-12 text-center">
+            <p class="text-light">此小農目前還沒有上架商品，敬請期待！</p>
+            <a href="{% url 'home:cooperative_farmers' %}" class="btn btn-warning">
+              <i class="bi bi-arrow-left"></i> 返回小農列表
+            </a>
+          </div>
+          {% endfor %}
+
+        </div>
+
+        <!-- 分頁 -->
+        {% if products.has_other_pages %}
+        <nav aria-label="商品分頁" class="mt-5">
+          <ul class="pagination">
+            {% if products.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ products.previous_page_number }}">
+                <i class="bi bi-chevron-left"></i> 上一頁
+              </a>
+            </li>
+            {% endif %}
+            
+            {% for num in products.paginator.page_range %}
+            {% if products.number == num %}
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
+            </li>
+            {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+            
+            {% if products.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ products.next_page_number }}">
+                下一頁 <i class="bi bi-chevron-right"></i>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+        {% endif %}
+      </div>
+    </section>
+
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化 AOS 動畫
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 1000,
+            easing: 'ease-in-out',
+            once: true
+        });
+    }
+
+    // 搜尋功能
+    const searchInput = document.getElementById('productSearch');
+    const productItems = document.querySelectorAll('.product-item');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            productItems.forEach(item => {
+                const productName = item.querySelector('.product-name') ? 
+                    item.querySelector('.product-name').textContent.toLowerCase() : '';
+                const productDesc = item.querySelector('.product-description') ? 
+                    item.querySelector('.product-description').textContent.toLowerCase() : '';
+                
+                if (productName.includes(searchTerm) || productDesc.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    item.style.opacity = '1';
+                } else {
+                    item.style.opacity = '0';
+                    setTimeout(() => {
+                        item.style.display = 'none';
+                    }, 300);
+                }
+            });
+        });
+    }
+
+    // 排序功能
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            const sortValue = this.value;
+            const container = document.getElementById('productsContainer');
+            const items = Array.from(productItems);
+            
+            items.sort((a, b) => {
+                switch(sortValue) {
+                    case 'popular':
+                        return parseInt(b.dataset.sales) - parseInt(a.dataset.sales);
+                    case 'price-low':
+                        return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                    case 'price-high':
+                        return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+                    case 'newest':
+                        // 假設項目順序就是新舊順序
+                        return 0;
+                    default:
+                        return 0;
+                }
+            });
+            
+            // 重新排列 DOM
+            items.forEach(item => container.appendChild(item));
+        });
+    }
+
+    // 庫存篩選
+    const stockFilter = document.getElementById('stockFilter');
+    if (stockFilter) {
+        stockFilter.addEventListener('change', function() {
+            const filterValue = this.value;
+            
+            productItems.forEach(item => {
+                const stockStatus = item.dataset.stock;
+                
+                if (filterValue === 'all' || 
+                    (filterValue === 'in-stock' && stockStatus === 'in_stock') ||
+                    (filterValue === 'low-stock' && stockStatus === 'low_stock')) {
+                    item.style.display = 'block';
+                    item.style.opacity = '1';
+                } else {
+                    item.style.opacity = '0';
+                    setTimeout(() => {
+                        item.style.display = 'none';
+                    }, 300);
+                }
+            });
+        });
+    }
+});
+</script>
+
+{% endblock content %}

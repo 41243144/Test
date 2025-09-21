@@ -1,0 +1,89 @@
+{% load wagtailcore_tags %}
+
+<div class="document-block">
+    {% if value.document %}
+    <div class="document-card">
+        <div class="document-icon">
+            <i class="bi bi-file-earmark-text"></i>
+        </div>
+        <div class="document-info">
+            <h4 class="document-title">
+                {{ value.title|default:value.document.title }}
+            </h4>
+            {% if value.description %}
+                <p class="document-description">{{ value.description }}</p>
+            {% endif %}
+            <div class="document-meta">
+                <span class="file-size">{{ value.document.file_size|filesizeformat }}</span>
+                <span class="file-type">{{ value.document.file_extension|upper }}</span>
+            </div>
+        </div>
+        <div class="document-download">
+            <a href="{{ value.document.url }}" target="_blank" class="btn btn-outline-light">
+                <i class="bi bi-download"></i> 下載
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.document-block {
+    margin: 30px 0;
+}
+
+.document-card {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(205, 164, 94, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.document-card:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: #cda45e;
+}
+
+.document-icon {
+    font-size: 2rem;
+    color: #cda45e;
+    margin-right: 20px;
+}
+
+.document-info {
+    flex: 1;
+}
+
+.document-title {
+    color: #fff;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.document-description {
+    color: #ccc;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.document-meta {
+    display: flex;
+    gap: 15px;
+}
+
+.document-meta span {
+    color: #999;
+    font-size: 0.8rem;
+    padding: 2px 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+
+.document-download .btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+</style>

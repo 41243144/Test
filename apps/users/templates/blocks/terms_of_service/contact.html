@@ -1,0 +1,23 @@
+{% load wagtailcore_tags %}
+<!-- 聯絡資訊區塊 -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+        <h3 class="card-title mb-3"><i class="fas fa-envelope me-2 text-primary"></i>{{ value.title }}</h3>
+        <p class="mb-3">{{ value.description }}</p>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-unstyled mb-3">
+                    <li class="mb-2"><i class="fas fa-envelope me-2 text-muted"></i><strong>電子郵件：</strong> {{ value.email }}</li>
+                    <li class="mb-2"><i class="fas fa-phone me-2 text-muted"></i><strong>客服電話：</strong> {{ value.phone }}</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-unstyled mb-3">
+                    <li class="mb-2"><i class="fas fa-clock me-2 text-muted"></i><strong>服務時間：</strong> {{ value.service_hours }}</li>
+                    <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-muted"></i><strong>通訊地址：</strong> {{ value.address }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

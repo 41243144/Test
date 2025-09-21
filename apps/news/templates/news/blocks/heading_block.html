@@ -1,0 +1,13 @@
+{% load wagtailcore_tags %}
+
+<h{{ value.size }} class="news-heading">
+    {{ value.heading_text }}
+</h{{ value.size }}>
+
+<style>
+.news-heading {
+    color: #cda45e;
+    margin: 30px 0 20px;
+    font-weight: 600;
+}
+</style>

@@ -1,0 +1,9 @@
+{% load wagtailcore_tags %}
+<!-- 警告區塊 -->
+<div class="alert alert-{{ value.alert_type }}" role="alert">
+    <strong>
+        <i class="fas fa-{{ icon_name }} me-2"></i>
+        {{ value.alert_label }}:
+    </strong>
+    {{ value.content }}
+</div>

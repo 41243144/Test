@@ -1,0 +1,79 @@
+{% load wagtailcore_tags %}
+
+<div class="code-block">
+    <div class="code-header">
+        <span class="language-label">{{ value.language|title }}</span>
+        <button class="copy-btn" onclick="copyCode(this)">
+            <i class="bi bi-clipboard"></i> 複製
+        </button>
+    </div>
+    <pre><code class="language-{{ value.language }}">{{ value.code }}</code></pre>
+</div>
+
+<style>
+.code-block {
+    margin: 30px 0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2d3748;
+    padding: 10px 20px;
+    border-bottom: 1px solid #4a5568;
+}
+
+.language-label {
+    color: #cda45e;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.copy-btn {
+    background: transparent;
+    border: 1px solid #cda45e;
+    color: #cda45e;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+    background: #cda45e;
+    color: #2d3748;
+}
+
+.code-block pre {
+    background: #1a202c;
+    margin: 0;
+    padding: 20px;
+    overflow-x: auto;
+    color: #e2e8f0;
+    line-height: 1.5;
+}
+
+.code-block code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+</style>
+
+<script>
+function copyCode(button) {
+    const codeBlock = button.closest('.code-block').querySelector('code');
+    const text = codeBlock.textContent;
+    
+    navigator.clipboard.writeText(text).then(function() {
+        button.innerHTML = '<i class="bi bi-check"></i> 已複製';
+        setTimeout(() => {
+            button.innerHTML = '<i class="bi bi-clipboard"></i> 複製';
+        }, 2000);
+    });
+}
+</script>

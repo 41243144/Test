@@ -1,0 +1,38 @@
+{% load wagtailcore_tags %}
+
+<blockquote class="news-quote">
+    <p>{{ value.text }}</p>
+    {% if value.author %}
+        <footer class="quote-author">
+            <cite>— {{ value.author }}</cite>
+        </footer>
+    {% endif %}
+</blockquote>
+
+<style>
+.news-quote {
+    background: rgba(205, 164, 94, 0.1);
+    border-left: 4px solid #cda45e;
+    padding: 25px;
+    margin: 30px 0;
+    border-radius: 0 10px 10px 0;
+    font-size: 1.1rem;
+    font-style: italic;
+}
+
+.news-quote p {
+    margin-bottom: 0;
+    color: #fff;
+}
+
+.quote-author {
+    margin-top: 15px;
+    text-align: right;
+}
+
+.quote-author cite {
+    color: #cda45e;
+    font-style: normal;
+    font-weight: 500;
+}
+</style>

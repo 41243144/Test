@@ -1,0 +1,12 @@
+<!-- Custom HTML Section -->
+<section class="custom-html section {% if value.css_classes %}{{ value.css_classes }}{% endif %}">
+  {% if value.title %}
+    <div class="container section-title" data-aos="fade-up">
+      <h2>{{ value.title }}</h2>
+    </div>
+  {% endif %}
+  
+  <div class="container">
+    {{ value.html_content|safe }}
+  </div>
+</section>

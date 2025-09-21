@@ -1,0 +1,50 @@
+{% comment %}
+SEO Meta 標籤模板
+根據網站設定自動產生 meta 標籤
+{% endcomment %}
+
+<title>{{ meta_title }}</title>
+<meta name="description" content="{{ meta_description }}">
+
+{% if settings %}
+    {% if settings.favicon %}
+    <link rel="icon" type="image/png" href="{{ settings.favicon.file.url }}">
+    {% endif %}
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{{ meta_title }}">
+    <meta property="og:description" content="{{ meta_description }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    {% if settings.site_logo %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ settings.site_logo.file.url }}">
+    {% endif %}
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ meta_title }}">
+    <meta name="twitter:description" content="{{ meta_description }}">
+    {% if settings.site_logo %}
+    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ settings.site_logo.file.url }}">
+    {% endif %}
+    
+    <!-- Google Analytics -->
+    {% if settings.google_analytics_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.google_analytics_id }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ settings.google_analytics_id }}');
+    </script>
+    {% endif %}
+    
+    <!-- Google Tag Manager -->
+    {% if settings.google_tag_manager_id %}
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','{{ settings.google_tag_manager_id }}');</script>
+    {% endif %}
+{% endif %}

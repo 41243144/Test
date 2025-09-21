@@ -1,0 +1,63 @@
+{% load static wagtailimages_tags wagtailcore_tags %}
+
+<!-- Events Section -->
+<section id="events" class="events section">
+  {% if value.background_image %}
+    {% image value.background_image original as bg_img %}
+    <img class="slider-bg" src="{{ bg_img.url }}" alt="" data-aos="fade-in">
+  {% else %}
+    <img class="slider-bg" src="{% static 'assets/img/events-bg.jpg' %}" alt="" data-aos="fade-in">
+  {% endif %}
+
+  <div class="container">
+    <div class="swiper init-swiper" data-aos="fade-up" data-aos-delay="100">
+      <script type="application/json" class="swiper-config">
+        {
+          "loop": true,
+          "speed": 600,
+          "autoplay": {
+            "delay": 5000
+          },
+          "slidesPerView": "auto",
+          "pagination": {
+            "el": ".swiper-pagination",
+            "type": "bullets",
+            "clickable": true
+          }
+        }
+      </script>
+      <div class="swiper-wrapper">
+        {% for event in value.events %}
+          <div class="swiper-slide">
+            <div class="row gy-4 event-item">
+              <div class="col-lg-6">
+                {% if event.image %}
+                  {% image event.image width-600 class="img-fluid" %}
+                {% else %}
+                  <img src="{% static 'assets/img/events-slider/events-slider-1.jpg' %}" class="img-fluid" alt="">
+                {% endif %}
+              </div>
+              <div class="col-lg-6 pt-4 pt-lg-0 content">
+                <h3>{{ event.title }}</h3>
+                {% if event.subtitle %}
+                  <div class="price">
+                    <p><span>{{ event.subtitle }}</span></p>
+                  </div>
+                {% endif %}
+                {{ event.description|richtext }}
+                {% if event.features %}
+                  <ul>
+                    {% for feature in event.features %}
+                      <li><i class="bi bi-check2-circle"></i> <span>{{ feature }}</span></li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+          </div><!-- End Slider item -->
+        {% endfor %}
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>

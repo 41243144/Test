@@ -1,0 +1,47 @@
+{% load static wagtailimages_tags wagtailcore_tags %}
+
+<!-- Platform Services Section -->
+<section id="services" class="specials section">
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>{{ value.title }}</h2>
+    {% if value.subtitle %}
+      <p>{{ value.subtitle }}</p>
+    {% endif %}
+  </div><!-- End Section Title -->
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row">
+      <div class="col-lg-3">
+        <ul class="nav nav-tabs flex-column">
+          {% for service in value.services %}
+            <li class="nav-item">
+              <a class="nav-link{% if forloop.first %} active show{% endif %}" data-bs-toggle="tab" href="#service-tab-{{ forloop.counter }}">{{ service.tab_title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="col-lg-9 mt-4 mt-lg-0">
+        <div class="tab-content">
+          {% for service in value.services %}
+            <div class="tab-pane{% if forloop.first %} active show{% endif %}" id="service-tab-{{ forloop.counter }}">
+              <div class="row">
+                <div class="col-lg-8 details order-2 order-lg-1">
+                  <h3>{{ service.service_title }}</h3>
+                  {{ service.description|richtext }}
+                </div>
+                <div class="col-lg-4 text-center order-1 order-lg-2">
+                  {% if service.image %}
+                    {% image service.image width-400 class="img-fluid" %}
+                  {% else %}
+                    <img src="{% static 'assets/img/specials-1.png' %}" alt="" class="img-fluid">
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

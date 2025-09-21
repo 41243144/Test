@@ -1,0 +1,38 @@
+{% load wagtailcore_tags %}
+<div class="card shadow-sm mb-4">
+  <div class="card-body p-4">
+    <h3 class="card-title mb-3">
+      <i class="fas fa-{{ self.title and "envelope" or "" }} me-2 text-primary"></i>{{ self.title }}
+    </h3>
+
+    {% if self.intro %}
+      <p class="mb-3">{{ self.intro|richtext }}</p>
+    {% endif %}
+
+    <div class="row">
+      <div class="col-md-6">
+        <ul class="list-unstyled mb-3">
+          {% for item in self.left_contacts %}
+            <li class="mb-2">
+              <i class="fas fa-{{ item.value.icon }} me-2 text-muted"></i>
+              <strong>{{ item.value.label }}：</strong>{{ item.value.value }}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <ul class="list-unstyled mb-3">
+          {% for item in self.right_contacts %}
+            <li class="mb-2">
+              <i class="fas fa-{{ item.value.icon }} me-2 text-muted"></i>
+              <strong>{{ item.value.label }}：</strong>{{ item.value.value }}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+        {% for block in self.extra %}
+            {% include_block block %}
+        {% endfor %}
+    </div>
+  </div>
+</div>

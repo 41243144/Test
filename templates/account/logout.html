@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n allauth account widget_tweaks %}
+
+{% block body_class %}starter-page-page{% endblock %}
+
+{% block extra_css %}
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="{% static 'assets/vendor/font-awesome/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/intl-tel-input/css/intlTelInput.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/Shanghuyun_Platform.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block head_title %}{% trans "Sign Out" %}{% endblock %}
+
+{% block content %}
+<main class="main">
+  <div class="page-title position-relative" data-aos="fade" style="background-image: url({% static 'assets/img/page-title-bg.webp' %});">
+    <div class="container position-relative">
+      <h1>登出</h1>
+      <p>您確定要登出嗎？</p>
+    </div>
+  </div>
+  <section id="logout" class="section bg-light text-dark" data-aos="fade-up">
+    <div class="container">
+      <div class="section-title text-center mb-4">
+        <h2 class="text-dark">登出</h2>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-xl-5">
+          <div class="card shadow-sm">
+            <div class="card-body p-4">
+              <form method="post" action="{% url 'account_logout' %}" id="logout-form" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                  <p>您確定要登出嗎？</p>
+                </div>
+                <div class="d-grid mt-4">
+                  <button type="submit" class="btn btn-lg custom-btn">登出</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'assets/vendor/jquery/js/jquery-3.6.0.min.js' %}"></script>
+{% endblock %}

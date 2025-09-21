@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags %}
+
+
+{% block body_class %}terms-of-service-page{% endblock %}
+
+{% block extra_css %}
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  
+<link href="{% static 'users/css/privacy_policy.css' %}" rel="stylesheet">
+
+{% endblock extra_css %}
+
+{% block content %}
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title position-relative" data-aos="fade" style="background-image: url(assets/img/page-title-bg.webp);">
+      <div class="container position-relative">
+        <h1>服務條款 <br></h1>
+        <p>使用本平台前，請詳細閱讀並同意以下服務條款。</p>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="index.html">Home</a></li>
+            <li class="current">服務條款</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+    <!-- End Page Title -->
+
+    <!--  Section -->
+    <section id="terms-of-service" class="section bg-light text-dark" data-aos="fade-up">
+        <div class="container">
+            <!-- 前言 -->
+            <div class="section-title text-center mb-5">
+            <h2 class="text-dark">服務條款</h2>
+            <p class="lead">在使用本平台以前，請先參閱《服務條款》</p>
+            </div>
+
+            <div class="row justify-content-center">
+            <div class="col-lg-10">
+                
+                <!-- 接受條款 -->
+                <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3"><i class="fas fa-file-contract me-2 text-primary"></i>接受條款</h3>
+                    <p class="mb-3">
+                    歡迎使用尚虎雲產銷平台（以下簡稱"本平台"、"我們"或"平台"）。本服務條款構成您與本平台之間具有法律約束力的協議。
+                    使用本平台即表示您已閱讀、理解並同意遵守本服務條款。
+                    </p>
+                    <div class="alert alert-warning" role="alert">
+                    <strong><i class="fas fa-exclamation-triangle me-2"></i>重要聲明：</strong>
+                    如您不同意本服務條款的任何部分，請立即停止使用本平台服務。
+                    </div>
+                </div>
+                </div>
+
+                <!-- 服務說明 -->
+                <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3"><i class="fas fa-cogs me-2 text-primary"></i>服務說明</h3>
+                    
+                    <h5 class="mt-4 mb-3">本平台提供以下服務：</h5>
+                    <ul class="mb-0">
+                    <li><strong>商戶管理：</strong>協助商戶建立線上店面、管理商品與服務</li>
+                    <li><strong>訂單處理：</strong>提供訂單管理、追蹤及客服功能</li>
+                    <li><strong>金流服務：</strong>整合多元支付方式及金流處理</li>
+                    <li><strong>數據分析：</strong>提供營運數據分析與報告</li>
+                    <li><strong>行銷工具：</strong>協助商戶進行數位行銷推廣</li>
+                    <li><strong>技術支援：</strong>提供平台操作指導與技術協助</li>
+                    </ul>
+                </div>
+                </div>
+
+                <!-- 用戶註冊與帳戶 -->
+                <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3"><i class="fas fa-user-plus me-2 text-primary"></i>用戶註冊與帳戶管理</h3>
+                    
+                    <h5 class="mt-4 mb-3">註冊要求</h5>
+                    <ul class="mb-3">
+                    <li>您必須年滿 18 歲或具備完全民事行為能力</li>
+                    <li>提供真實、準確、完整的註冊資訊</li>
+                    <li>擁有合法的經營資格（適用於商戶用戶）</li>
+                    <li>同意接收服務相關的必要通知</li>
+                    </ul>
+
+                    <h5 class="mt-4 mb-3">帳戶責任</h5>
+                    <ul class="mb-0">
+                    <li>您負責保護帳戶密碼的安全性</li>
+                    <li>如發現帳戶被盜用，應立即通知我們</li>
+                    <li>您對帳戶下的所有活動承擔完全責任</li>
+                    <li>不得將帳戶轉讓或出借給他人使用</li>
+                    </ul>
+                </div>
+                </div>
+
+                <!-- 使用規則 -->
+                <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3"><i class="fas fa-exclamation-circle me-2 text-primary"></i>使用規則與限制</h3>
+                    
+                    <h5 class="mt-4 mb-3">禁止行為</h5>
+                    <p class="mb-3">使用本平台時，您不得從事以下行為：</p>
+                    <ol class="mb-3">
+                    <li>上傳、傳輸違法、有害、威脅性、濫用性、騷擾性、誹謗性、粗俗、淫穢或其他令人反感的內容</li>
+                    <li>侵犯他人的智慧財產權、隱私權或其他權利</li>
+                    <li>傳播病毒、木馬程式或其他惡意軟體</li>
+                    <li>進行詐欺、洗錢或其他非法商業活動</li>
+                    <li>干擾或破壞平台的正常運作</li>
+                    <li>使用自動化程式或機器人進行大量操作</li>
+                    <li>收集其他用戶的個人資訊</li>
+                    <li>冒充他人身分或虛假陳述</li>
+                    </ol>
+
+                    <div class="alert alert-danger" role="alert">
+                    <strong><i class="fas fa-ban me-2"></i>違規處理：</strong>
+                    如發現違規行為，我們有權暫停或終止您的帳戶，並保留追究法律責任的權利。
+                    </div>
+                </div>
+                </div>
+
+                <!-- 商戶服務條款 -->
+                <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3"><i class="fas fa-store me-2 text-primary"></i>商戶服務特別條款</h3>
+                    
+                    <h5 class="mt-4 mb-3">商戶義務</h5>
+                    <ul class="mb-3">
+                    <li>確保販售商品或服務的合法性</li>
+                    <li>提供準確的商品資訊與價格</li>
+                    <li>履行與消費者的交易承諾</li>
+                    <li>遵守相關法律法規及行業標準</li>
+                    <li>配合平台的審核與管理</li>
+                    </ul>
+
+                    <h5 class="mt-4 mb-3">商品管理</h5>
+                    <ul class="mb-0">
+                    <li>商戶需對其上架商品的品質與安全負責</li>
+                    <li>禁止販售法律禁止或限制的商品</li>
+                    <li>商品資訊應真實、完整、不誤導消費者</li>
+                    <li>價格標示應清楚明確，不得有隱藏費用</li>
+                    </ul>
+                </div>
+                </div>
+
+                <!-- 費用與付款 -->
+                <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3"><i class="fas fa-credit-card me-2 text-primary"></i>費用與付款條款</h3>
+                    
+                    <h5 class="mt-4 mb-3">服務費用</h5>
+                    <div class="row">
+                    <div class="col-md-6">
+                        <ul class="mb-3">
+                        <li>基本服務可能提供免費試用期</li>
+                        <li>進階功能可能需要支付相關費用</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="mb-3">
+                        <li>交易手續費將按照公告費率收取</li>
+                        <li>費用標準可能會調整，會提前通知</li>
+                        </ul>
+                    </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">付款與結算</h5>
+                    <div class="row">
+                    <div class="col-md-6">
+                        <ul class="mb-3">
+                        <li>支援多種付款方式，包括信用卡、銀行轉帳等</li>
+                        <li>交易款項將按照約定時間結算</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="mb-3">
+                        <li>如有爭議或退款，將按照相關政策處理</li>
+                        <li>商戶需提供有效的收款帳戶資訊</li>
+                        </ul>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- 智慧財產權 -->
+                <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3"><i class="fas fa-copyright me-2 text-primary"></i>智慧財產權</h3>
+                    
+                    <h5 class="mt-4 mb-3">平台權利</h5>
+                    <ul class="mb-3">
+                    <li>本平台的所有內容、設計、技術均受智慧財產權保護</li>
+                    <li>未經授權不得複製、修改、傳播平台內容</li>
+                    <li>平台商標、標誌不得未經許可使用</li>
+                    </ul>
+
+                    <h5 class="mt-4 mb-3">用戶內容</h5>
+                    <ul class="mb-0">
+                    <li>您上傳的內容應擁有合法權利</li>
+                    <li>授權平台使用您上傳的內容以提供服務</li>
+                    <li>不得侵犯他人的智慧財產權</li>
+                    </ul>
+                </div>
+                </div>
+
+                <!-- 免責聲明 -->
+                <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3"><i class="fas fa-shield-alt me-2 text-primary"></i>免責聲明</h3>
+                    
+                    <h5 class="mt-4 mb-3">服務免責</h5>
+                    <ul class="mb-3">
+                    <li>平台服務按"現況"提供，不保證絕對無誤或不中斷</li>
+                    <li>不對用戶之間的交易糾紛承擔責任</li>
+                    <li>不保證平台內容的準確性或完整性</li>
+                    <li>不對因使用平台而產生的損失承擔責任</li>
+                    </ul>
+
+                    <h5 class="mt-4 mb-3">第三方服務</h5>
+                    <p class="mb-0">
+                    平台可能整合第三方服務（如支付、物流等），我們不對第三方服務的品質或可靠性承擔責任。
+                    使用第三方服務時，您需遵守其相關條款。
+                    </p>
+                </div>
+                </div>
+
+                <!-- 服務終止 -->
+                <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3"><i class="fas fa-times-circle me-2 text-primary"></i>服務終止</h3>
+                    
+                    <h5 class="mt-4 mb-3">用戶終止</h5>
+                    <ul class="mb-3">
+                    <li>您可隨時申請終止帳戶</li>
+                    <li>終止前請處理完所有進行中的交易</li>
+                    <li>某些資料可能因法律要求而需保留</li>
+                    </ul>
+
+                    <h5 class="mt-4 mb-3">平台終止</h5>
+                    <ul class="mb-0">
+                    <li>我們可能因技術、商業或法律原因終止服務</li>
+                    <li>如有重大變更，會提前通知用戶</li>
+                    <li>違規用戶的帳戶可能被立即終止</li>
+                    </ul>
+                </div>
+                </div>
+
+                <!-- 爭議解決 -->
+                <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3"><i class="fas fa-balance-scale me-2 text-primary"></i>爭議解決</h3>
+                    
+                    <h5 class="mt-4 mb-3">適用法律</h5>
+                    <p class="mb-3">本服務條款適用中華民國法律，並受台灣法院管轄。</p>
+
+                    <h5 class="mt-4 mb-3">爭議處理</h5>
+                    <ol class="mb-0">
+                    <li><strong>協商：</strong>優先透過友善協商解決爭議</li>
+                    <li><strong>調解：</strong>如協商不成，可申請第三方調解</li>
+                    <li><strong>仲裁：</strong>重大爭議可申請仲裁處理</li>
+                    <li><strong>訴訟：</strong>最終可向有管轄權的法院提起訴訟</li>
+                    </ol>
+                </div>
+                </div>
+
+                <!-- 條款修改 -->
+                <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3"><i class="fas fa-edit me-2 text-primary"></i>條款修改</h3>
+                    
+                    <p class="mb-3">
+                    我們保留隨時修改本服務條款的權利。重大修改會透過電子郵件、網站公告或其他適當方式通知您。
+                    修改後的條款自公告之日起生效。繼續使用服務即表示您接受修改後的條款。
+                    </p>
+
+                    <div class="alert alert-info" role="alert">
+                    <strong><i class="fas fa-info-circle me-2"></i>建議：</strong>
+                    請定期檢視本服務條款，以了解最新的規定和變更。
+                    </div>
+                </div>
+                </div>
+
+                <!-- 聯絡資訊 -->
+                <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3"><i class="fas fa-envelope me-2 text-primary"></i>聯絡我們</h3>
+                    <p class="mb-3">如您對本服務條款有任何疑問或需要協助，請透過以下方式聯絡我們：</p>
+                    
+                    <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled mb-3">
+                        <li class="mb-2"><i class="fas fa-envelope me-2 text-muted"></i><strong>客服電子郵件：</strong> support@shanghuyun.com</li>
+                        <li class="mb-2"><i class="fas fa-gavel me-2 text-muted"></i><strong>法務聯絡：</strong> legal@shanghuyun.com</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled mb-3">
+                        <li class="mb-2"><i class="fas fa-phone me-2 text-muted"></i><strong>客服電話：</strong> (02) 1234-5678</li>
+                        <li class="mb-2"><i class="fas fa-clock me-2 text-muted"></i><strong>服務時間：</strong> 週一至週五 09:00-18:00</li>
+                        </ul>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- 最後更新 -->
+                <div class="card shadow-sm">
+                <div class="card-body p-4 text-center bg-light">
+                    <p class="mb-0 text-muted">
+                    <i class="fas fa-calendar-alt me-2"></i>
+                    <strong>最後更新日期：</strong>2025年7月8日
+                    </p>
+                </div>
+                </div>
+
+            </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+ 
+</style>
+
+  </main>
+
+{% endblock content %}
+
+{% block extra_js %}
+    <!-- terms_of_service JavaScript-->
+    <script src="{% static 'users/js/terms_of_service.js' %}"></script>
+{% endblock extra_js %}
+

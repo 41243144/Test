@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load allauth account widget_tweaks socialaccount  %}
+
+{% block body_class %}starter-page-page{% endblock %}
+
+{% block extra_css %}
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="{% static 'assets/vendor/font-awesome/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/intl-tel-input/css/intlTelInput.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/Shanghuyun_Platform.css' %}" rel="stylesheet">
+  <style>
+    
+  </style>
+{% endblock %}
+
+{% block head_title %}
+    {% trans "Sign In" %}
+{% endblock head_title %}
+
+{% block content %}
+<main class="main">
+  <div class="page-title position-relative" data-aos="fade" style="background-image: url({% static 'assets/img/page-title-bg.webp' %});">
+    <div class="container position-relative">
+      <h1>登入</h1>
+      <p>請輸入帳號密碼登入平台</p>
+    </div>
+  </div>
+  <section id="login" class="section bg-light text-dark" data-aos="fade-up">
+    <div class="container">
+      <div class="section-title text-center mb-4">
+        <h2 class="text-dark">登入</h2>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-xl-5">
+          <div class="card shadow-sm">
+            <div class="card-body p-4">
+              <form method="post" action="{% url 'account_login' %}" id="login-form" novalidate>
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                  <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors }}
+                  </div>
+                {% endif %}
+                <div class="mb-3">
+                  <label for="id_login" class="form-label">
+                    <i class="fa fa-user me-2"></i>電子郵件
+                  </label>
+                  {{ form.login|add_class:'form-control'|attr:'placeholder:輸入電子郵件' }}
+                  <div style="display:none;">
+                    {{ form.login.errors }}
+                  </div>
+
+                </div>
+                <div class="mb-3">
+                  <label for="id_password" class="form-label">
+                    <i class="fa fa-lock me-2"></i>密碼
+                  </label>
+                  {{ form.password|add_class:'form-control'|attr:'placeholder:輸入密碼' }}
+                  <div style="display:none;">
+                    {{ form.password.errors }}
+                  </div>
+                </div>
+                <div class="form-check mb-3">
+                  {{ form.remember|add_class:'form-check-input' }}
+                  <label class="form-check-label" for="id_remember">記住我</label>
+                </div>
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-lg custom-btn">登入</button>
+                </div>
+                <div class="text-center my-3">
+                  <p class="text-muted">或使用以下方式登入</p>
+                </div>
+                <div class="d-grid mb-3">
+                  <a href="{% provider_login_url 'google' process='login' %}" class="btn btn-google btn-outline d-flex align-items-center justify-content-center google-auth-btn">
+                    <span class="google-icon-wrapper">
+                      <img src="{% static 'img/google-logo.svg' %}" alt="Google" width="20" height="20" />
+                    </span>
+                    <span class="google-btn-text">使用 Google 帳號登入</span>
+                  </a>
+                </div>
+                <p class="text-center mt-3">
+                  沒有帳號？
+                  <a href="{% url 'account_signup' %}" class="text-primary">立即註冊</a>
+                  <br>
+                  <a href="{% url 'account_reset_password' %}" class="text-primary">忘記密碼？</a>
+                </p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'assets/vendor/jquery/js/jquery-3.6.0.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/jquery-validation/js/jquery.validate.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/jquery-validation/js/additional-methods.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/intl-tel-input/js/intlTelInput.min.js' %}"></script>
+  <script src="{% static 'js/login.js' %}"></script>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {% if PASSKEY_LOGIN_ENABLED %}
+        {% include "mfa/webauthn/snippets/login_script.html" with button_id="passkey_login" %}
+    {% endif %}
+{% endblock %}

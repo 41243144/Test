@@ -1,0 +1,632 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}order-history-page{% endblock %}
+
+{% block extra_css %}
+<style>
+/* 訂單紀錄頁面專屬樣式 - 與購物車一致的風格 */
+
+/* 頁面標題區域 */
+.order-hero {
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{% static "assets/img/page-title-bg.webp" %}');
+  background-size: cover;
+  background-position: center;
+  padding: 120px 0 80px 0;
+}
+
+.order-hero h1 {
+  color: #fff;
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.order-hero .breadcrumb-item {
+  color: rgba(255,255,255,0.8);
+}
+
+.order-hero .breadcrumb-item.active {
+  color: #cda45e;
+}
+
+/* 訂單內容區域 */
+.order-content {
+  background: linear-gradient(135deg, #2c1810 0%, #3d2817 100%);
+  min-height: 80vh;
+  padding: 60px 0;
+}
+
+/* 統計卡片 */
+.stats-row {
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(205,164,94,0.05) 100%);
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  border: 1px solid rgba(205,164,94,0.2);
+  backdrop-filter: blur(10px);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  background: linear-gradient(145deg, rgba(255,255,255,0.12) 0%, rgba(205,164,94,0.08) 100%);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.3), 0 0 20px rgba(205,164,94,0.2);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #cda45e;
+  margin-bottom: 10px;
+}
+
+.stat-label {
+  color: rgba(255,255,255,0.8);
+  font-size: 1.1rem;
+}
+
+/* 篩選區域 */
+.filter-section {
+  background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(205,164,94,0.05) 100%);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(205,164,94,0.2);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.filter-title {
+  color: #cda45e;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filter-btn {
+  background: transparent;
+  border: 2px solid rgba(205,164,94,0.5);
+  color: rgba(255,255,255,0.8);
+  padding: 8px 20px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: #cda45e;
+  color: #2c1810;
+  border-color: #cda45e;
+}
+
+/* 訂單列表 */
+.orders-section {
+  background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(205,164,94,0.05) 100%);
+  border-radius: 15px;
+  padding: 30px;
+  border: 1px solid rgba(205,164,94,0.2);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.section-title {
+  color: #cda45e;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.order-item {
+  background: linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(205,164,94,0.03) 100%);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(205,164,94,0.15);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.order-item:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.10) 0%, rgba(205,164,94,0.06) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2), 0 0 15px rgba(205,164,94,0.1);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.order-number {
+  color: #cda45e;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.order-date {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+}
+
+.order-status {
+  display: inline-block;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background: rgba(255, 234, 167, 0.2);
+  color: #d63031;
+  border: 1px solid rgba(214, 48, 49, 0.3);
+}
+
+.status-paid {
+  background: rgba(85, 239, 196, 0.2);
+  color: #00b894;
+  border: 1px solid rgba(0, 184, 148, 0.3);
+}
+
+.status-processing {
+  background: rgba(116, 185, 255, 0.2);
+  color: #0984e3;
+  border: 1px solid rgba(9, 132, 227, 0.3);
+}
+
+.status-shipped {
+  background: rgba(253, 121, 168, 0.2);
+  color: #e84393;
+  border: 1px solid rgba(232, 67, 147, 0.3);
+}
+
+.status-completed {
+  background: rgba(0, 184, 148, 0.2);
+  color: #00b894;
+  border: 1px solid rgba(0, 184, 148, 0.3);
+}
+
+.status-cancelled {
+  background: rgba(255, 255, 255, 0.1);
+  color: #999;
+  border: 1px solid rgba(153, 153, 153, 0.3);
+}
+
+.order-items {
+  margin: 15px 0;
+}
+
+.order-items-title {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.item-list {
+  color: rgba(255,255,255,0.9);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.total-label {
+  color: rgba(255,255,255,0.8);
+  font-size: 1rem;
+}
+
+.total-amount {
+  color: #cda45e;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.order-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  background: transparent;
+  border: 1px solid #cda45e;
+  color: #cda45e;
+  padding: 8px 20px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-action:hover {
+  background: #cda45e;
+  color: #2c1810;
+}
+
+.btn-payment {
+  background: linear-gradient(135deg, #cda45e 0%, #b8941f 100%);
+  border: none;
+  color: #fff;
+}
+
+.btn-payment:hover {
+  background: linear-gradient(135deg, #b8941f 0%, #a08019 100%);
+  color: #fff;
+}
+
+/* 分頁 */
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.pagination {
+  background: rgba(255,255,255,0.05);
+  border-radius: 25px;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.page-link {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.8);
+  padding: 8px 15px;
+  border-radius: 20px;
+  margin: 0 2px;
+  transition: all 0.3s ease;
+}
+
+.page-link:hover,
+.page-item.active .page-link {
+  background: #cda45e;
+  color: #0c4128;
+}
+
+/* 空狀態 */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255,255,255,0.7);
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: rgba(205,164,94,0.5);
+  margin-bottom: 20px;
+}
+
+.empty-state h4 {
+  color: #cda45e;
+  margin-bottom: 15px;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .order-hero h1 {
+    font-size: 2rem;
+  }
+  
+  .orders-section {
+    padding: 20px;
+  }
+  
+  .order-item {
+    padding: 20px;
+  }
+  
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-buttons {
+    justify-content: center;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+  
+  .order-actions {
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .btn-action {
+    flex: 1;
+    text-align: center;
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-hero {
+    padding: 100px 0 60px 0;
+  }
+  
+  .order-hero h1 {
+    font-size: 1.8rem;
+  }
+  
+  .filter-section,
+  .orders-section {
+    padding: 15px;
+  }
+  
+  .order-item {
+    padding: 15px;
+  }
+  
+  .stat-card {
+    padding: 20px;
+  }
+  
+  .stat-number {
+    font-size: 1.8rem;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 頁面標題區域 -->
+<section class="order-hero">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <h1>訂單紀錄</h1>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-center">
+            <li class="breadcrumb-item"><a href="/home/">首頁</a></li>
+            <li class="breadcrumb-item"><a href="/cart/">購物車</a></li>
+            <li class="breadcrumb-item active">訂單紀錄</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 訂單內容區域 -->
+<section class="order-content">
+  <div class="container">
+    <!-- 統計資料 -->
+    <div class="row stats-row">
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-number">{{ total_orders }}</div>
+          <div class="stat-label">總訂單數</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-number">{{ pending_orders }}</div>
+          <div class="stat-label">待付款</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-number">{{ completed_orders }}</div>
+          <div class="stat-label">已完成</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 篩選區域 -->
+    <div class="filter-section">
+      <div class="filter-title">
+        <i class="bi bi-funnel"></i> 狀態篩選
+      </div>
+      <div class="filter-buttons">
+        <a href="?status=all" class="filter-btn {% if current_status == 'all' %}active{% endif %}">
+          全部訂單
+        </a>
+        <a href="?status=pending" class="filter-btn {% if current_status == 'pending' %}active{% endif %}">
+          待付款
+        </a>
+        <a href="?status=paid" class="filter-btn {% if current_status == 'paid' %}active{% endif %}">
+          已付款
+        </a>
+        <a href="?status=processing" class="filter-btn {% if current_status == 'processing' %}active{% endif %}">
+          處理中
+        </a>
+        <a href="?status=shipped" class="filter-btn {% if current_status == 'shipped' %}active{% endif %}">
+          已出貨
+        </a>
+        <a href="?status=completed" class="filter-btn {% if current_status == 'completed' %}active{% endif %}">
+          已完成
+        </a>
+        <a href="?status=cancelled" class="filter-btn {% if current_status == 'cancelled' %}active{% endif %}">
+          已取消
+        </a>
+      </div>
+    </div>
+
+    <!-- 訂單列表 -->
+    <div class="orders-section">
+      <div class="section-title">
+        <i class="bi bi-receipt"></i> 我的訂單
+      </div>
+
+      {% if orders %}
+        {% for order in orders %}
+        <div class="order-item">
+          <div class="order-header">
+            <div>
+              <div class="order-number">訂單編號：{{ order.merchant_trade_no }}</div>
+              <div class="order-date">{{ order.created_at|date:"Y年m月d日 H:i" }}</div>
+            </div>
+            <div class="order-status status-{{ order.status }}">
+              {% if order.status == 'pending' %}
+                待付款
+              {% elif order.status == 'paid' %}
+                已付款
+              {% elif order.status == 'processing' %}
+                處理中
+              {% elif order.status == 'shipped' %}
+                已出貨
+              {% elif order.status == 'completed' %}
+                已完成
+              {% elif order.status == 'cancelled' %}
+                已取消
+              {% else %}
+                {{ order.status }}
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="order-items">
+            <div class="order-items-title">訂單商品：</div>
+            <div class="item-list">
+              {% for item in order.items.all %}
+                {{ item.product.name }} x{{ item.quantity }}{% if not forloop.last %}，{% endif %}
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="order-total">
+            <div class="total-label">訂單總計：</div>
+            <div class="total-amount">NT$ {{ order.total_amount|floatformat:0 }}</div>
+          </div>
+
+          <div class="order-actions">
+            <a href="/api/v1/order/result/?order_id={{ order.id }}" class="btn-action">
+              <i class="bi bi-eye"></i> 查看詳情
+            </a>
+            {% if order.status == 'pending' %}
+              <a href="/api/v1/payment/checkout/{{ order.id }}/" class="btn-action btn-payment">
+                <i class="bi bi-credit-card"></i> 立即付款
+              </a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- 分頁 -->
+        {% if page_obj.has_other_pages %}
+        <div class="pagination-wrapper">
+          <nav aria-label="訂單分頁">
+            <ul class="pagination">
+              {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_status != 'all' %}&status={{ current_status }}{% endif %}">
+                    <i class="bi bi-chevron-left"></i>
+                  </a>
+                </li>
+              {% endif %}
+
+              {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                  <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                  </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if current_status != 'all' %}&status={{ current_status }}{% endif %}">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+
+              {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_status != 'all' %}&status={{ current_status }}{% endif %}">
+                    <i class="bi bi-chevron-right"></i>
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+        {% endif %}
+
+      {% else %}
+        <!-- 空狀態 -->
+        <div class="empty-state">
+          <i class="bi bi-receipt"></i>
+          <h4>還沒有訂單</h4>
+          <p>您還沒有任何訂單紀錄，快去購物車結帳吧！</p>
+          <a href="/cart/" class="btn-action">
+            <i class="bi bi-cart"></i> 前往購物車
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 如果有成功訊息參數，顯示通知
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+        showNotification('操作成功！', 'success');
+    }
+});
+
+// 通知函數
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        background: ${type === 'success' ? 'rgba(40,167,69,0.9)' : 'rgba(220,53,69,0.9)'};
+        border: 1px solid ${type === 'success' ? '#28a745' : '#dc3545'};
+        color: #fff;
+        border-radius: 10px;
+    `;
+    notification.innerHTML = `
+        <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 3秒後自動移除
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 3000);
+}
+</script>
+{% endblock %}

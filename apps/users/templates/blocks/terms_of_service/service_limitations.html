@@ -1,0 +1,21 @@
+{% load wagtailcore_tags %}
+<!-- 服務限制與終止區塊 -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+        <h3 class="card-title mb-3"><i class="fas fa-exclamation-circle me-2 text-primary"></i>{{ value.title }}</h3>
+        
+        <h5 class="mt-4 mb-3">我們保留以下權利：</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="mb-3">
+                    {% for right in value.platform_rights %}
+                        <li><strong>{{ right.title }}：</strong>{{ right.description }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% if value.notice_text %}
+            <p class="mb-0">{{ value.notice_text }}</p>
+        {% endif %}
+    </div>
+</div>

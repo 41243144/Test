@@ -1,0 +1,31 @@
+{% load wagtailimages_tags %}
+
+<div class="news-image-block text-{{ value.alignment }}">
+    {% if value.image %}
+        {% image value.image fill-800x400 as img %}
+        <img src="{{ img.url }}" alt="{{ value.alt_text|default:value.caption }}" class="img-fluid news-image">
+        {% if value.caption %}
+            <div class="image-caption">{{ value.caption }}</div>
+        {% endif %}
+    {% endif %}
+</div>
+
+<style>
+.news-image-block {
+    margin: 30px 0;
+}
+
+.news-image {
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    max-width: 100%;
+    height: auto;
+}
+
+.image-caption {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #ccc;
+    font-style: italic;
+}
+</style>

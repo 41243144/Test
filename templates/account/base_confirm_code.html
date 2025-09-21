@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static widget_tweaks %}
+{% load i18n allauth account %}
+
+{% block head_title %}驗證{% endblock %}
+
+{% block body_class %}starter-page-page{% endblock %}
+
+{% block extra_css %}
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="{% static 'assets/vendor/font-awesome/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/Shanghuyun_Platform.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<main class="main">
+  <div class="page-title position-relative" data-aos="fade" style="background-image: url({% static 'assets/img/page-title-bg.webp' %});">
+    <div class="container position-relative">
+      <h1>{{ block.title|default:'驗證' }}</h1>
+      <p>我們已發送驗證碼至 {{ block.recipient }}，請於時效內輸入。</p>
+    </div>
+  </div>
+  <section id="base-confirm-code" class="section bg-light text-dark" data-aos="fade-up">
+    <div class="container">
+      <div class="section-title text-center mb-4">
+        <h2 class="text-dark">{{ block.title|default:'驗證' }}</h2>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-xl-5">
+          <div class="card shadow-sm">
+            <div class="card-body p-4">
+              <form method="post" action="{{ action_url }}" id="base-confirm-code-form" novalidate>
+                {% csrf_token %}
+                {% for field in verify_form.visible_fields %}
+                  <div class="mb-3">
+                    {{ field|add_class:'form-control' }}
+                    {% if field.errors %}
+                      <div class="alert alert-danger mt-2">{{ field.errors }}</div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+                {{ redirect_field }}
+                <div class="d-grid mt-4">
+                  <button type="submit" class="btn btn-lg custom-btn">確認</button>
+                  {% if can_resend %}
+                    <button type="submit" name="action" value="resend" class="btn btn-outline-secondary mt-2">重新發送驗證碼</button>
+                  {% endif %}
+                  {% if cancel_url %}
+                    <a href="{{ cancel_url }}" class="btn btn-outline-secondary mt-2">取消</a>
+                  {% else %}
+                    <button type="submit" form="logout-from-stage" class="btn btn-outline-secondary mt-2">取消</button>
+                  {% endif %}
+                </div>
+              </form>
+              <form id="resend" method="post" action="{{ action_url }}" style="display:none;">
+                <input type="hidden" name="action" value="resend">
+                {% csrf_token %}
+              </form>
+              {% if not cancel_url %}
+                <form id="logout-from-stage" method="post" action="{% url 'account_logout' %}">
+                  <input type="hidden" name="next" value="{% url 'account_login' %}">
+                  {% csrf_token %}
+                </form>
+              {% endif %}
+              {% if can_change %}
+                <hr>
+                <details {% if change_form.errors %}open{% endif %}>
+                  <summary>{{ block.change_title }}</summary>
+                  <form method="post" action="{{ action_url }}">
+                    {% csrf_token %}
+                    {% for field in change_form.visible_fields %}
+                      <div class="mb-3">
+                        {{ field|add_class:'form-control' }}
+                        {% if field.errors %}
+                          <div class="alert alert-danger mt-2">{{ field.errors }}</div>
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                    <div class="d-grid mt-2">
+                      <button name="action" value="change" type="submit" class="btn btn-primary">變更</button>
+                    </div>
+                  </form>
+                </details>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

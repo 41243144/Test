@@ -1,0 +1,32 @@
+{% load static wagtailuserbar %}
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    {% include "includes/_head.html" %}
+
+    {% block extra_css %}{% endblock extra_css %}
+    <!-- =======================================================
+    * Template Name: Restaurantly
+    * Template URL: https://bootstrapmade.com/restaurantly-restaurant-template/
+    * Updated: Aug 07 2024 with Bootstrap v5.3.3
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    {% wagtailuserbar %}
+
+    {% include "includes/_header.html" %}
+
+    {% block content %}{% endblock %}
+
+    <!-- Global JavaScript -->
+    <script src="{% static 'js/Shanghuyun_Platform.js' %}"></script>
+
+    {% include "includes/_footer.html" %}
+
+    {% include "includes/_scripts.html" %}
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

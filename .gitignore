@@ -1,0 +1,11 @@
+ngrok.exe
+.env
+**/__pycache__/
+venv/
+env/
+venv_laptop/
+db.sqlite3
+**/migrations/*
+!**/migrations/__init__.py
+vedesktop_venv/
+media/

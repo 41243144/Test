@@ -1,0 +1,26 @@
+{% load wagtailcore_tags %}
+
+<div class="news-paragraph">
+    {{ value|richtext }}
+</div>
+
+<style>
+.news-paragraph {
+    color: #fff;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.news-paragraph p {
+    margin-bottom: 15px;
+}
+
+.news-paragraph a {
+    color: #cda45e;
+    text-decoration: none;
+}
+
+.news-paragraph a:hover {
+    text-decoration: underline;
+}
+</style>

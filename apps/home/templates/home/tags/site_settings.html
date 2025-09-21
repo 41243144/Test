@@ -1,0 +1,50 @@
+{% comment %}
+網站基本設定模板標籤
+顯示網站的基本資訊，包含 Logo、聯絡資訊等
+{% endcomment %}
+
+{% if settings %}
+<div class="site-settings-info">
+    {% if settings.site_logo %}
+    <div class="site-logo">
+        <img src="{{ settings.site_logo.file.url }}" alt="{{ settings.site_name }}" class="img-responsive">
+    </div>
+    {% endif %}
+    
+    {% if settings.site_name %}
+    <h1 class="site-title">{{ settings.site_name }}</h1>
+    {% endif %}
+    
+    {% if settings.site_tagline %}
+    <p class="site-tagline">{{ settings.site_tagline }}</p>
+    {% endif %}
+    
+    {% if settings.contact_email or settings.contact_phone %}
+    <div class="contact-info">
+        {% if settings.contact_email %}
+        <p class="contact-email">
+            <i class="fas fa-envelope"></i>
+            <a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>
+        </p>
+        {% endif %}
+        
+        {% if settings.contact_phone %}
+        <p class="contact-phone">
+            <i class="fas fa-phone"></i>
+            <a href="tel:{{ settings.contact_phone }}">{{ settings.contact_phone }}</a>
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% if settings.has_social_links %}
+    <div class="social-links">
+        {% for link in settings.get_social_links %}
+        <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" title="{{ link.name }}">
+            <i class="{{ link.icon }}"></i>
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endif %}

@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags %}
+
+
+{% block body_class %}starter-page-page{% endblock %}
+
+{% block extra_css %}
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  
+  
+  <!-- intl-tel-input for phone number formatting/validation -->
+  <link href="{% static 'assets/vendor/intl-tel-input/css/intlTelInput.min.css' %}" rel="stylesheet">
+
+  <!-- Filepond CSS -->
+  <link href="{% static 'assets/vendor/filepond/css/filepond.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/filepond/css/filepond-plugin-image-preview.min.css' %}" rel="stylesheet">
+
+    <link href="{% static 'users/css/profile.css' %}" rel="stylesheet">
+
+{% endblock extra_css %}
+
+{% block content %}
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title position-relative" data-aos="fade" style="background-image: url({% static 'assets/img/page-title-bg.webp' %});">
+      <div class="container position-relative">
+        <h1>編輯個人資料</h1>
+        <p>管理您的帳戶詳細資訊和設定。</p>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="/">Home</a></li>
+            <li class="current">編輯個人資料</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->    <!-- Profile Section -->
+    <section id="profile-section" class="profile-section section-bg">
+      <div class="container-fluid profile-container" data-aos="fade-up">
+
+        <aside class="profile-sidebar">
+          <nav class="nav flex-column">
+            <a class="nav-link active" href="#profile-details" data-bs-toggle="tab" data-bs-target="#profile-details-tab"><i class="fas fa-user-circle me-2"></i><span class="d-none d-sm-inline">個人資料</span><span class="d-sm-none">資料</span></a>
+            <a class="nav-link" href="#change-password" data-bs-toggle="tab" data-bs-target="#change-password-tab"><i class="fas fa-key me-2"></i><span class="d-none d-sm-inline">更改密碼</span><span class="d-sm-none">密碼</span></a>
+            <a class="nav-link" href="#account-management" data-bs-toggle="tab" data-bs-target="#account-management-tab"><i class="fas fa-cog me-2"></i><span class="d-none d-sm-inline">帳號管理</span><span class="d-sm-none">管理</span></a>
+            <!-- Add more links here if needed -->
+          </nav>
+        </aside>
+
+        <div class="profile-content tab-content">
+          <!-- Personal Details Tab -->
+          <div class="tab-pane fade show active" id="profile-details-tab" role="tabpanel" aria-labelledby="profile-details-link">
+            <div class="card shadow-sm">
+              <div class="card-body p-4">
+                <h3 class="card-title mb-4">個人資料設定</h3>
+
+                
+                
+                <form id="profile-edit-form" novalidate>
+                  <!-- Avatar Upload -->
+                  <div class="avatar-upload-container">
+                    <label for="avatar" class="form-label">頭像</label>
+                    <!-- Removed avatar-preview div as Filepond handles preview -->
+                    <input type="file" id="avatar" name="avatar" class="form-control" accept="image/*">
+                  </div>
+
+                  <!-- 真實姓名 -->
+                  <div class="mb-3">
+                    <label for="realname" class="form-label">
+                      <i class="fa fa-id-card me-2"></i>真實姓名
+                    </label>
+                    <input id="realname" type="text" name="realname" class="form-control" placeholder="例如：王小明" value="王小明" required>
+                  </div>
+
+                  <!-- 暱稱 -->
+                  <div class="mb-3">
+                    <label for="nickname" class="form-label">
+                      <i class="fa fa-comment me-2"></i>暱稱
+                    </label>
+                    <input id="nickname" type="text" name="nickname" class="form-control" placeholder="顯示用的暱稱" value="小明" required>
+                  </div>
+
+                  <!-- Email -->
+                    <div class="mb-3">
+                    <label for="email" class="form-label">
+                      <i class="fa fa-envelope me-2"></i>Email
+                    </label>
+                    <input id="email" type="email" name="email" class="form-control" placeholder="example@domain.com" value="{{user.email}}" readonly required>
+                    </div>
+
+                  <!-- 通訊地址 -->
+                  <div class="mb-3">
+                    <label for="address" class="form-label">
+                      <i class="fa fa-map-marker-alt me-2"></i>通訊地址
+                    </label>
+                    <input id="address" type="text" name="address" class="form-control" placeholder="例如：台北市信義區市府路1號" value="台北市信義區市府路1號">
+                  </div>                  
+                  <!-- 電話號碼 -->
+                  <div class="mb-3">
+                    <label for="phone" class="form-label">
+                      <i class="fa fa-phone me-2"></i>手機號碼
+                    </label>                    <div class="input-group phone-input-group">
+                      <input id="phone" type="tel" name="phone" class="form-control" placeholder="例如：0912345678" value="0912345678" required>
+                      <button class="btn btn-outline-secondary flex-shrink-0" type="button" id="verifyPhoneBtn">驗證</button>
+                    </div>
+                    <button class="btn btn-link btn-sm ps-0 mt-1 btn-resend-code" type="button" id="resendCodeBtn" style="display: none;">重新寄送驗證碼</button>
+                    <div id="phone-verification-message" class="form-text mt-1"></div>
+                  </div>
+                  
+                  <!-- 驗證碼輸入 (範例，初始隱藏) -->
+                  <div class="mb-3" id="otp-input-group" style="display: none;">
+                    <label for="otp" class="form-label">
+                      <i class="fa fa-shield-alt me-2"></i>簡訊驗證碼
+                    </label>
+                    <input id="otp" type="text" name="otp" class="form-control" placeholder="請輸入收到的驗證碼">
+                  </div>
+
+
+                  <!-- 按鈕 -->
+                  <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-lg custom-btn">
+                      儲存變更
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Change Password Tab -->
+          <div class="tab-pane fade" id="change-password-tab" role="tabpanel" aria-labelledby="change-password-link">
+            <div class="card shadow-sm">
+              <div class="card-body p-4">
+                <h3 class="card-title mb-4">更改密碼</h3>                <form id="change-password-form" novalidate>
+                  <div class="mb-3">
+                    <label for="current-password" class="form-label">
+                      <i class="fa fa-lock me-2"></i>目前密碼
+                    </label>
+                    <input type="password" id="current-password" name="current_password" class="form-control" autocomplete="current-password" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="new-password" class="form-label">
+                      <i class="fa fa-key me-2"></i>新密碼
+                    </label>
+                    <input type="password" id="new-password" name="new_password" class="form-control" autocomplete="new-password" required minlength="8">
+                    <div class="form-text" id="password-length-hint">密碼長度至少8個字元。</div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="confirm-password" class="form-label">
+                      <i class="fa fa-key me-2"></i>確認新密碼
+                    </label>
+                    <input type="password" id="confirm-password" name="confirm_password" class="form-control" autocomplete="new-password" required>
+                  </div>
+                  <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-lg custom-btn">更新密碼</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>          
+          <!-- Account Management Tab -->
+          <div class="tab-pane fade" id="account-management-tab" role="tabpanel" aria-labelledby="account-management-link">
+            <div class="card shadow-sm">
+              <div class="card-body p-4">
+                <h3 class="card-title mb-4">帳號管理</h3>
+                <div class="text-center py-5">
+                  <i class="fas fa-cog fa-3x text-muted mb-3"></i>
+                  <h5 class="text-muted">帳號管理功能</h5>
+                  <p class="text-muted">此區域預留給未來的帳號管理功能。</p>
+                </div>
+              </div>
+            </div>
+          </div></div>
+      </div>
+    </section>
+    <!-- /Profile Section -->
+
+  </main>
+
+{% endblock content %}
+
+{% block extra_js %}
+
+  <!-- SweetAlert2 CSS -->
+  <script src="{% static 'assets/vendor/sweetalert2/sweetalert2.min.js' %}"></script>
+
+  <!-- jQuery Validation Plugin -->
+  <script src="{% static 'assets/vendor/jquery/js/jquery-3.6.0.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/jquery-validation/js/jquery.validate.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/jquery-validation/js/additional-methods.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/intl-tel-input/js/intlTelInput.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/intl-tel-input/js/utils.min.js' %}"></script>
+
+  <!-- Filepond JavaScript -->
+  <script src="{% static 'assets/vendor/filepond/js/filepond-plugin-image-preview.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/filepond/js/filepond-plugin-file-validate-type.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/filepond/js/filepond.min.js' %}"></script>
+
+  <!-- Profile JavaScript-->
+  <script src="{% static 'users/js/profile.js' %}"></script>
+
+{% endblock extra_js %}
+

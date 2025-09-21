@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}news-category-page{% endblock %}
+
+{% block stylesheet %}{% endblock stylesheet %}
+
+{% block content %}
+<main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title position-relative" data-aos="fade" style="background-image: url({% static 'assets/img/page-title-bg.webp' %});">
+      <div class="container position-relative">
+        <h1>{{ category.name }}<br></h1>
+        <p>{{ category.description|default:"瀏覽此分類下的所有文章" }}</p>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="/">首頁</a></li>
+            <li><a href="{% url 'news:list' %}">最新消息</a></li>
+            <li class="current">{{ category.name }}</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- News Category Section -->
+    <section id="news-category" class="news section">
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <!-- 分類篩選 -->
+        <div class="news-filters text-center mb-5" data-aos="fade-up">
+          <div class="filters-wrapper">
+            <a href="{% url 'news:list' %}" class="filter-btn">全部</a>
+            {% for cat in categories %}
+            <a href="{% url 'news:category' cat.slug %}" class="filter-btn {% if cat == category %}active{% endif %}">{{ cat.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- 分類資訊 -->
+        <div class="category-info text-center mb-5" data-aos="fade-up">
+          <div class="category-badge" style="background-color: {{ category.color }}20; color: {{ category.color }};">
+            <i class="bi bi-folder"></i>
+            {{ category.name }}
+          </div>
+          {% if category.description %}
+          <p class="category-description">{{ category.description }}</p>
+          {% endif %}
+          <p class="category-count">共 {{ news_posts|length }} 篇文章</p>
+        </div>
+
+        <!-- 消息列表 -->
+        <div class="row gy-4">
+          {% for post in news_posts %}
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
+            <article class="news-item">
+              <div class="news-img">
+                {% if post.featured_image %}
+                  {% image post.featured_image fill-400x250 as post_img %}
+                  <img src="{{ post_img.url }}" alt="{{ post.title }}" class="img-fluid">
+                {% else %}
+                  <img src="{% static 'assets/img/blog/blog-' %}{{ forloop.counter|add:1 }}.jpg" alt="{{ post.title }}" class="img-fluid">
+                {% endif %}
+              </div>
+              <div class="news-content">
+                <div class="news-meta">
+                  <span class="category" style="background-color: {{ category.color }}20; color: {{ category.color }};">
+                    {{ category.name }}
+                  </span>
+                  <span class="date">{{ post.first_published_at|date:"Y/m/d" }}</span>
+                </div>
+                <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+                <p>{{ post.excerpt|truncatechars:120 }}</p>
+                {% if post.author %}
+                <div class="news-author">
+                  <span class="author-name">{{ post.author.name }}</span>
+                </div>
+                {% endif %}
+              </div>
+            </article>
+          </div>
+          {% empty %}
+          <div class="col-12 text-center">
+            <div class="no-posts-message">
+              <i class="bi bi-folder-x" style="font-size: 3rem; color: #666; margin-bottom: 20px;"></i>
+              <h4>此分類目前沒有文章</h4>
+              <p class="text-muted">請稍後再來查看，或瀏覽其他分類的內容。</p>
+              <a href="{% url 'news:list' %}" class="btn btn-outline-primary">返回所有消息</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- 分頁 -->
+        {% if is_paginated %}
+        <div class="pagination-wrapper text-center mt-5" data-aos="fade-up">
+          <nav aria-label="消息分頁">
+            <ul class="pagination justify-content-center">
+              {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page=1" aria-label="第一頁">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                  </a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="上一頁">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+              {% endif %}
+
+              {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                  <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                  </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+
+              {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="下一頁">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="最後一頁">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+        {% endif %}
+
+      </div>
+    </section><!-- /News Category Section -->
+
+</main>
+
+<style>
+    .text-muted {
+        color: #fff !important;
+    }
+  
+  /* 新聞項目樣式 */
+  .news-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 5px; /* 給 hover 效果留空間 */
+  }
+  
+  .news-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  }
+  
+  .news-content {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .news-content p {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-height: 1.5;
+    max-height: 4.5em;
+    color: #ccc;
+    margin-bottom: 15px;
+  }
+  
+  .news-content h3 {
+    margin-bottom: 10px;
+  }
+  
+  .news-content h3 a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .news-content h3 a:hover {
+    color: #cda45e;
+  }
+  
+  .news-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+  }
+  
+  .news-meta .category {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  .news-meta .date {
+    color: #999;
+  }
+  
+  .news-author {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .author-name {
+    color: #cda45e;
+    font-size: 0.9rem;
+  }
+  
+  /* 分類資訊樣式 */
+  .category-info {
+    background: rgba(255,255,255,0.05);
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  .category-description {
+    color: #ccc;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  
+  .category-count {
+    color: #cda45e;
+    font-weight: 500;
+  }
+  
+  /* 無文章訊息 */
+  .no-posts-message {
+    background: rgba(255,255,255,0.05);
+    padding: 60px 30px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .no-posts-message h4 {
+    color: #fff;
+    margin-bottom: 15px;
+  }
+  
+  /* 篩選按鈕樣式 */
+  .news-filters .filters-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .filter-btn {
+    display: inline-block;
+    padding: 8px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .filter-btn:hover, .filter-btn.active {
+    background: #cda45e;
+    color: #fff;
+    border-color: #cda45e;
+    transform: translateY(-2px);
+  }
+  
+  /* 分頁樣式 */
+  .pagination .page-link {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+  
+  .pagination .page-link:hover {
+    background-color: #cda45e;
+    border-color: #cda45e;
+    color: #fff;
+  }
+  
+  .pagination .page-item.active .page-link {
+    background-color: #cda45e;
+    border-color: #cda45e;
+  }
+
+  /* 響應式設計 */
+  @media (max-width: 768px) {
+    .news-filters .filters-wrapper {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .filter-btn {
+      width: 200px;
+      text-align: center;
+    }
+    
+    .news-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+    }
+  }
+</style>
+
+{% endblock content %}

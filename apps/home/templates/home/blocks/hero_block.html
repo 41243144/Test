@@ -1,0 +1,27 @@
+{% load static wagtailimages_tags %}
+
+<!-- Hero Section -->
+<section id="hero" class="hero section dark-background">
+  <img src="{% if value.background_image %}{% image value.background_image original as bg_img %}{{ bg_img.url }}{% else %}{% static 'assets/img/hero-bg.jpg' %}{% endif %}" alt="" data-aos="fade-in">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 d-flex flex-column align-items-center align-items-lg-start">
+        <h2 data-aos="fade-up" data-aos-delay="100">{{ value.title }}</h2>
+        {% if value.subtitle %}
+          <p data-aos="fade-up" data-aos-delay="200">{{ value.subtitle }}</p>
+        {% endif %}
+        {% if value.button_text_1 or value.button_text_2 %}
+          <div class="d-flex mt-4" data-aos="fade-up" data-aos-delay="300">
+            {% if value.button_text_1 and value.button_url_1 %}
+              <a href="{{ value.button_url_1 }}" class="cta-btn">{{ value.button_text_1 }}</a>
+            {% endif %}
+            {% if value.button_text_2 and value.button_url_2 %}
+              <a href="{{ value.button_url_2 }}" class="cta-btn">{{ value.button_text_2 }}</a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>

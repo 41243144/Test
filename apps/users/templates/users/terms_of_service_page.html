@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags %}
+
+{% block body_class %}terms-of-service-page{% endblock %}
+
+{% block extra_css %}
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  
+  <link href="{% static 'users/css/privacy_policy.css' %}" rel="stylesheet">
+{% endblock extra_css %}
+
+{% block content %}
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title position-relative" data-aos="fade" style="background-image: url(assets/img/page-title-bg.webp);">
+      <div class="container position-relative">
+        <h1>服務條款 <br></h1>
+        <p>使用本平台前，請仔細閱讀以下服務條款。使用本服務即表示您同意遵守這些條款。</p>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="/">Home</a></li>
+            <li class="current">服務條款</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+    <!-- End Page Title -->
+
+    <!-- 服務條款內容 Section -->
+    <section id="terms-of-service" class="section bg-light text-dark" data-aos="fade-up">
+        <div class="container">
+            <!-- 前言 -->
+            <div class="section-title text-center mb-5">
+            <h2 class="text-dark">服務條款</h2>
+            <p class="lead">在使用本平台以前，請先參閱《服務條款》</p>
+            </div>
+
+            <div class="row justify-content-center">
+            <div class="col-lg-10">
+                
+                {% if site_terms.content %}
+                    <!-- 動態內容區塊 -->
+                    {% for block in site_terms.content %}
+                        {% include_block block %}
+                    {% endfor %}
+                {% else %}
+                    <!-- 如果沒有設定內容，顯示預設內容 -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body p-4 text-center">
+                            <h3 class="card-title mb-3"><i class="fas fa-exclamation-circle me-2 text-warning"></i>內容尚未設定</h3>
+                            <p class="mb-3">
+                                服務條款內容尚未在後台設定。請聯絡管理員進行設定。
+                            </p>
+                            <div class="alert alert-info" role="alert">
+                                <strong><i class="fas fa-info-circle me-2"></i>管理員須知：</strong>
+                                請前往 Wagtail 後台的「設定」→「服務條款」進行內容設定。
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- 最後更新 -->
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 text-center bg-light">
+                        <p class="mb-0 text-muted">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        <strong>最後更新日期：</strong>
+                        {% if site_terms.updated_at %}
+                            {{ site_terms.updated_at|date:"Y年n月j日" }}
+                        {% else %}
+                            2025年7月11日
+                        {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+        </div>
+    </section>
+
+  </main>
+
+{% endblock content %}
+
+{% block extra_js %}
+  <!-- AOS Animation -->
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+
+  <!-- Initialize AOS -->
+  <script>
+    // Initialize AOS
+    AOS.init({
+      duration: 1000,
+      easing: 'ease-in-out',
+      once: true,
+      mirror: false
+    });
+  </script>
+{% endblock extra_js %}

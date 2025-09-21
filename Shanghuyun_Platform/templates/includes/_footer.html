@@ -1,0 +1,92 @@
+{% load static site_settings_tags %}
+<footer id="footer" class="footer">
+
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6 footer-about">
+          {% get_site_setting 'site_name' as site_name %}
+          {% get_site_setting 'site_logo' as site_logo %}
+          <a href="/" class="logo d-flex align-items-center">
+            {% if site_logo %}
+              <img src="{{ site_logo.file.url }}" alt="{{ site_name|default:'尚虎雲產銷平台' }}" style="max-height: 40px;">
+              <span class="sitename">{{ site_name|default:'尚虎雲產銷平台' }}</span>
+            {% endif %}
+          </a>
+          <div class="footer-contact pt-3">
+            {% get_site_setting 'contact_address' as contact_address %}
+            {% get_site_setting 'contact_phone' as contact_phone %}
+            {% get_site_setting 'contact_email' as contact_email %}
+            {% if contact_address %}
+              <p>{{ contact_address|linebreaksbr }}</p>
+            {% else %}
+              <p>台北市信義區信義路五段7號</p>
+            {% endif %}
+            <p class="mt-3"><strong>電話:</strong> <span>{{ contact_phone|default:'+886-2-1234-5678' }}</span></p>
+            <p><strong>信箱:</strong> <span>{{ contact_email|default:'contact@shanghuyun.com' }}</span></p>
+          </div>
+          
+          {% get_social_links as social_links %}
+          {% if social_links %}
+          <div class="social-links d-flex mt-4">
+            {% for link in social_links %}
+              <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" title="{{ link.name }}">
+                <i class="{{ link.icon }}"></i>
+              </a>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="col-lg-4 col-md-3 footer-links">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About us</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Terms of service</a></li>
+            <li><a href="#">Privacy policy</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-3 footer-links">
+          <h4>Our Services</h4>
+          <ul>
+            <li><a href="#">Web Design</a></li>
+            <li><a href="#">Web Development</a></li>
+            <li><a href="#">Product Management</a></li>
+            <li><a href="#">Marketing</a></li>
+            <li><a href="#">Graphic Design</a></li>
+          </ul>
+        </div>
+
+        {% comment %} <div class="col-lg-4 col-md-12 footer-newsletter">
+          <h4>Our Newsletter</h4>
+          <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
+          <form action="forms/newsletter.php" method="post" class="php-email-form">
+            <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
+            <div class="loading">Loading</div>
+            <div class="error-message"></div>
+            <div class="sent-message">Your subscription request has been sent. Thank you!</div>
+          </form>
+        </div> {% endcomment %}
+
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">Restaurantly</strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you've purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+      </div>
+    </div>
+
+  </footer>
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>

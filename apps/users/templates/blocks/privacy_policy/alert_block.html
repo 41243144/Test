@@ -1,0 +1,8 @@
+{# templates/blocks/privacy_policy/alert_block.html #}
+<div class="alert alert-{{ self.alert_type }}" role="alert">
+  <strong>
+    <i class="fas fa-{{ icon_name }} me-2"></i>
+    {{ self.alert_label }}：
+  </strong>
+  {{ self.content }}
+</div>

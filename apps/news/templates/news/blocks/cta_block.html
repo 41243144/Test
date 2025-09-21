@@ -1,0 +1,75 @@
+{% load wagtailcore_tags %}
+
+<div class="cta-block">
+    <div class="cta-content">
+        <h3 class="cta-title">{{ value.title }}</h3>
+        {% if value.text %}
+            <p class="cta-text">{{ value.text }}</p>
+        {% endif %}
+        <a href="{{ value.button_url }}" class="btn btn-{{ value.button_style }} cta-button">
+            {{ value.button_text }}
+        </a>
+    </div>
+</div>
+
+<style>
+.cta-block {
+    background: linear-gradient(135deg, rgba(205, 164, 94, 0.2), rgba(205, 164, 94, 0.1));
+    border: 2px solid rgba(205, 164, 94, 0.3);
+    border-radius: 15px;
+    padding: 40px;
+    margin: 40px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-block::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(205, 164, 94, 0.1) 0%, transparent 70%);
+    animation: pulse 3s ease-in-out infinite;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 1;
+}
+
+.cta-title {
+    color: #cda45e;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.cta-text {
+    color: #fff;
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+}
+
+.cta-button {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.1; }
+}
+</style>
