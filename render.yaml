@@ -8,7 +8,7 @@ services:
       python manage.py makemigrations --noinput
       python manage.py migrate --noinput
       python manage.py createsuperuser --noinput 
-    startCommand: gunicorn myproject.wsgi:application
+    startCommand: gunicorn Shanghuyun_Platform.wsgi:application
 databases:
   - name: my-django-db
     plan: free
