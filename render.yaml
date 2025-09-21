@@ -9,3 +9,6 @@ services:
       python manage.py migrate --noinput
       python manage.py createsuperuser --noinput 
     startCommand: gunicorn myproject.wsgi:application
+databases:
+  - name: my-django-db
+    plan: free
