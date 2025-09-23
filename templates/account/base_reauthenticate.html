@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% load allauth widget_tweaks i18n %}
+
+{% block head_title %}{% trans "Confirm Access" %}{% endblock %}
+
+{% block body_class %}starter-page-page{% endblock %}
+
+{% block extra_css %}
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="{% static 'assets/vendor/font-awesome/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/Shanghuyun_Platform.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<main class="main">
+  <div class="page-title position-relative" data-aos="fade" style="background-image: url({% static 'assets/img/page-title-bg.webp' %});">
+    <div class="container position-relative">
+      <h1>重新驗證</h1>
+      <p>請再次驗證以保護您的帳號安全。</p>
+    </div>
+  </div>
+  <section id="base-reauthenticate" class="section bg-light text-dark" data-aos="fade-up">
+    <div class="container">
+      <div class="section-title text-center mb-4">
+        <h2 class="text-dark">重新驗證</h2>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-xl-5">
+          <div class="card shadow-sm">
+            <div class="card-body p-4">
+              <h3 class="mb-3">請再次驗證以保護您的帳號安全</h3>
+              {% block reauthenticate_content %}{% endblock %}
+              {% if reauthentication_alternatives %}
+                <hr>
+                <h4>其他驗證方式</h4>
+                <div class="d-grid gap-2">
+                  {% for alt in reauthentication_alternatives %}
+                    <a href="{{ alt.url }}" class="btn btn-outline-primary">{{ alt.description }}</a>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static widget_tweaks %}
+{% load i18n allauth account %}
+
+{% block head_title %}{% translate "Sign In" %}{% endblock %}
+
+{% block body_class %}starter-page-page{% endblock %}
+
+{% block extra_css %}
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="{% static 'assets/vendor/font-awesome/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/Shanghuyun_Platform.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<main class="main">
+  <div class="page-title position-relative" data-aos="fade" style="background-image: url({% static 'assets/img/page-title-bg.webp' %});">
+    <div class="container position-relative">
+      <h1>發送登入驗證碼</h1>
+      <p>您將收到一組特殊驗證碼，可用於免密碼登入。</p>
+    </div>
+  </div>
+  <section id="request-login-code" class="section bg-light text-dark" data-aos="fade-up">
+    <div class="container">
+      <div class="section-title text-center mb-4">
+        <h2 class="text-dark">發送登入驗證碼</h2>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-xl-5">
+          <div class="card shadow-sm">
+            <div class="card-body p-4">
+              <form method="post" action="{% url 'account_request_login_code' %}" id="request-login-code-form" novalidate>
+                {% csrf_token %}
+                {% for field in form.visible_fields %}
+                  <div class="mb-3">
+                    {{ field|add_class:'form-control' }}
+                    {% if field.errors %}
+                      <div class="alert alert-danger mt-2">{{ field.errors }}</div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+                <div class="d-grid mt-4">
+                  <button type="submit" class="btn btn-lg custom-btn">發送驗證碼</button>
+                </div>
+                <p class="text-center mt-3">
+                  <a href="{% url 'account_login' %}" class="text-primary">其他登入方式</a>
+                </p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

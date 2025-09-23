@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static widget_tweaks %}
+{% load i18n allauth %}
+
+{% block head_title %}{% trans "Change Phone" %}{% endblock %}
+
+{% block body_class %}starter-page-page{% endblock %}
+
+{% block extra_css %}
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="{% static 'assets/vendor/font-awesome/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/Shanghuyun_Platform.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<main class="main">
+  <div class="page-title position-relative" data-aos="fade" style="background-image: url({% static 'assets/img/page-title-bg.webp' %});">
+    <div class="container position-relative">
+      <h1>更改手機號碼</h1>
+      <p>您可以更換帳號綁定的手機號碼。</p>
+    </div>
+  </div>
+  <section id="phone-change" class="section bg-light text-dark" data-aos="fade-up">
+    <div class="container">
+      <div class="section-title text-center mb-4">
+        <h2 class="text-dark">更改手機號碼</h2>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-xl-5">
+          <div class="card shadow-sm">
+            <div class="card-body p-4">
+              <form method="post" action="{% url 'account_change_phone' %}" id="phone-change-form" novalidate>
+                {% csrf_token %}
+                {% if phone %}
+                  <div class="mb-3">
+                    <label class="form-label">目前手機號碼</label>
+                    <input type="tel" class="form-control" value="{{ phone }}" disabled>
+                    {% if not phone_verified %}
+                      <div class="mt-2">
+                        <button type="submit" name="action" value="verify" class="btn btn-outline-secondary btn-sm">重新發送驗證</button>
+                      </div>
+                    {% endif %}
+                  </div>
+                {% endif %}
+                <div class="mb-3">
+                  <label for="id_phone" class="form-label"><i class="fa fa-phone me-2"></i>更改為<span class="text-danger ms-1">*</span></label>
+                  {{ form.phone|add_class:'form-control' }}
+                  {% if form.phone.errors %}
+                    <div class="alert alert-danger mt-2">{{ form.phone.errors }}</div>
+                  {% endif %}
+                </div>
+                <div class="d-grid mt-4">
+                  <button type="submit" name="action_add" class="btn btn-lg custom-btn">更改手機號碼</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

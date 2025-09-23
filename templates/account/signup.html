@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% load static widget_tweaks %}
+{% load i18n allauth account widget_tweaks socialaccount %}
+{% load socialaccount %} 
+
+{% block body_class %}starter-page-page{% endblock %}
+
+{% block extra_css %}
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="{% static 'assets/vendor/font-awesome/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/intl-tel-input/css/intlTelInput.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/Shanghuyun_Platform.css' %}" rel="stylesheet">
+  
+  <style>
+    .form-check {
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+      transition: border-color 0.3s ease;
+    }
+    
+    .form-check:hover {
+      border-color: #007cba;
+    }
+    
+    .form-check-input:checked {
+      background-color: #007cba;
+      border-color: #007cba;
+    }
+    
+    .form-check-input:focus {
+      border-color: #007cba;
+      box-shadow: 0 0 0 0.2rem rgba(0, 124, 186, 0.25);
+    }
+    
+    .form-check-label {
+      cursor: pointer;
+      line-height: 1.5;
+    }
+    
+    .form-check-label a {
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .form-check-label a:hover {
+      text-decoration: underline;
+    }
+    
+    .text-primary {
+      color: #007cba !important;
+    }
+  </style>
+{% endblock %}
+
+{% block head_title %}{% trans "Sign Up" %}{% endblock %}
+
+{% block content %}
+<main class="main">
+  <div class="page-title position-relative" data-aos="fade" style="background-image: url({% static 'assets/img/page-title-bg.webp' %});">
+    <div class="container position-relative">
+      <h1>註冊新帳號</h1>
+      <p>歡迎加入我們的平台。註冊後即可使用所有功能與服務。</p>
+    </div>
+  </div>
+  <section id="register" class="section bg-light text-dark" data-aos="fade-up">
+    <div class="container">
+      <div class="section-title text-center mb-4">
+        <h2 class="text-dark">註冊新帳號</h2>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-xl-5">
+          <div class="card shadow-sm">
+            <div class="card-body p-4">
+              <form method="post" action="{% url 'account_signup' %}" id="register-form" novalidate>
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                  <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors }}
+                  </div>
+                {% endif %}
+                {% for field in form.visible_fields %}
+                  <div class="mb-3">
+                    <label for="id_{{ field.name }}" class="form-label">
+                      {% if field.name == 'email' %}
+                        <i class="fa fa-envelope me-2"></i>電子郵件
+                      {% elif field.name == 'password1' %}
+                        <i class="fa fa-lock me-2"></i>密碼
+                      {% elif field.name == 'password2' %}
+                        <i class="fa fa-lock me-2"></i>確認密碼
+                      {% else %}
+                        {{ field.label }}
+                      {% endif %}
+                      {% if field.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+                    </label>
+                    {{ field|add_class:'form-control' }}
+                    {% if field.errors %}
+                      <div class="alert alert-danger mt-2">{{ field.errors }}</div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+                
+                <!-- 隱私權政策和服務條款同意 -->
+                <div class="mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="agree_terms" name="agree_terms" required>
+                    <label class="form-check-label" for="agree_terms">
+                      <small>
+                        我已閱讀並同意本平台的
+                        <a href="{% url 'privacy_policy' %}" class="text-primary" target="_blank">隱私權政策</a>
+                        和
+                        <a href="{% url 'terms_of_service' %}" class="text-primary" target="_blank">服務條款</a>
+                        <span class="text-danger">*</span>
+                      </small>
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="d-grid mt-4">
+                  <button type="submit" class="btn btn-lg custom-btn">立即註冊</button>
+                </div>
+                <div class="text-center my-3">
+                  <p class="text-muted">或使用以下方式註冊</p>
+                </div>
+                <div class="d-grid mb-3">
+                  <a href="{% provider_login_url 'google' process='login' %}" class="btn btn-google btn-outline d-flex align-items-center justify-content-center google-auth-btn">
+                    <span class="google-icon-wrapper">
+                      <img src="{% static 'img/google-logo.svg' %}" alt="Google" width="20" height="20" />
+                    </span>
+                    <span class="google-btn-text">使用 Google 帳號註冊/登入</span>
+                  </a>
+                </div>
+                <p class="text-center mt-3">
+                  已有帳號？
+                  <a href="{% url 'account_login' %}" class="text-primary">前往登入</a>
+                </p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'assets/vendor/jquery/js/jquery-3.6.0.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/jquery-validation/js/jquery.validate.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/jquery-validation/js/additional-methods.min.js' %}"></script>
+  <script>
+    $(function() {
+      $("#register-form").validate({
+        errorClass: "is-invalid",
+        validClass: "is-valid",
+        errorElement: "div",
+        onfocusout: function(elem) { this.element(elem); },
+        errorPlacement: function(error, element) {
+          error.addClass("invalid-feedback");
+          element.after(error);
+        },
+        rules: {
+          email: { required: true, email: true },
+          password1: { required: true, minlength: 8 },
+          password2: { required: true, minlength: 8, equalTo: "#id_password1" },
+          agree_terms: { required: true }
+        },
+        messages: {
+          email: { required: "請輸入電子郵件", email: "請輸入有效的電子郵件地址" },
+          password1: { required: "請輸入密碼", minlength: "密碼長度至少8個字元" },
+          password2: { required: "請再次輸入密碼", minlength: "密碼長度至少8個字元", equalTo: "兩次輸入的密碼不一致" },
+          agree_terms: { required: "請閱讀並同意隱私權政策和服務條款" }
+        }
+      });
+    });
+  </script>
+{% endblock %}
