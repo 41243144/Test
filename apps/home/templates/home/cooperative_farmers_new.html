@@ -8,7 +8,7 @@
   {% render_meta_tags %}
   
   <style>
-    /* 合作小農頁面專屬樣式 */
+    /* 合作夥伴頁面專屬樣式 */
     
     /* 頁面標題區域優化 */
     .farmer-hero {
@@ -47,6 +47,20 @@
       background: linear-gradient(135deg, #cda45e, #b8935a);
       color: white;
       font-size: 4rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .farmer-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+
+    .farmer-avatar:hover img {
+      transform: scale(1.05);
     }
 
     .farmer-info {
@@ -352,107 +366,25 @@
     {% for block in page.body %}
         {% include_block block %}
     {% empty %}
-        <!-- 如果沒有任何區塊，顯示預設的合作小農內容 -->
+        <!-- 如果沒有任何區塊，顯示預設的合作夥伴內容 -->
 
         <!-- Page Title -->
         <div class="page-title farmer-hero position-relative" data-aos="fade">
           <div class="container position-relative">
-            <h1 class="text-light text-center">合作小農夥伴</h1>
+            <h1 class="text-light text-center">合作夥伴</h1>
             <p class="text-center text-light fs-5">與在地小農攜手合作，為您帶來最新鮮優質的農產品</p>
             <nav class="breadcrumbs">
               <ol>
                 <li><a href="/">首頁</a></li>
-                <li class="current">合作小農</li>
+                <li class="current">合作夥伴</li>
               </ol>
             </nav>
           </div>
         </div><!-- End Page Title -->
 
-        <!-- 合作理念區域 -->
-        <section class="cooperation-values">
-          <div class="container" data-aos="fade-up">
-            <div class="section-title text-center mb-5">
-              <h2 class="text-light">我們的合作理念</h2>
-              <p class="text-light">支持在地農業，促進永續發展，為消費者提供安心食材</p>
-            </div>
-            
-            <div class="row">
-              <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="value-item">
-                  <div class="value-icon">
-                    <i class="bi bi-heart"></i>
-                  </div>
-                  <h4 class="value-title">用心栽培</h4>
-                  <p class="value-description">
-                    每位合作小農都秉持著對土地的敬愛，採用友善環境的耕作方式，
-                    不使用過量農藥，讓作物在自然環境中健康成長。
-                  </p>
-                </div>
-              </div>
-              
-              <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="value-item">
-                  <div class="value-icon">
-                    <i class="bi bi-shield-check"></i>
-                  </div>
-                  <h4 class="value-title">品質保證</h4>
-                  <p class="value-description">
-                    嚴格的品質管控流程，從種植、採收到包裝，每個環節都經過仔細檢驗，
-                    確保每份農產品都達到最高品質標準。
-                  </p>
-                </div>
-              </div>
-              
-              <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="value-item">
-                  <div class="value-icon">
-                    <i class="bi bi-truck"></i>
-                  </div>
-                  <h4 class="value-title">新鮮直送</h4>
-                  <p class="value-description">
-                    建立完善的冷鏈配送系統，從農場直接配送到消費者手中，
-                    縮短中間流程，確保農產品的新鮮度和營養價值。
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
-        <!-- 統計數據 -->
-        <section class="stats-section" data-aos="fade-up">
-          <div class="container">
-            <div class="row">
-              <div class="col-lg-3 col-md-6">
-                <div class="stat-item">
-                  <span class="stat-number" data-target="{{ vendors.count }}">0</span>
-                  <p class="stat-label">合作小農</p>
-                </div>
-              </div>
-              
-              <div class="col-lg-3 col-md-6">
-                <div class="stat-item">
-                  <span class="stat-number" data-target="{{ categories.count }}">0</span>
-                  <p class="stat-label">產品分類</p>
-                </div>
-              </div>
-              
-              <div class="col-lg-3 col-md-6">
-                <div class="stat-item">
-                  <span class="stat-number" data-target="15">0</span>
-                  <p class="stat-label">合作縣市</p>
-                </div>
-              </div>
-              
-              <div class="col-lg-3 col-md-6">
-                <div class="stat-item">
-                  <span class="stat-number" data-target="98">0</span>
-                  <p class="stat-label">滿意度 %</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+
+
 
         <!-- 篩選與搜尋區域 -->
         <section id="farmer-filters" class="section py-4">
@@ -475,7 +407,7 @@
           </div>
         </section>
 
-        <!-- 合作小農列表 -->
+        <!-- 合作夥伴列表 -->
         <section id="farmers-list" class="section py-5">
           <div class="container">
             <div class="row gy-4" id="farmersContainer">
@@ -489,7 +421,13 @@
                   
                   <div class="text-center mt-4">
                     <div class="farmer-avatar">
-                      <i class="bi bi-person-circle"></i>
+                      {% if vendor.user.profile and vendor.user.profile.portrait %}
+                        <img src="{{ vendor.user.profile.portrait.url }}" 
+                             alt="{{ vendor.name }}"
+                             onerror="this.style.display='none'; this.parentNode.innerHTML='<i class=\'bi bi-person-circle\'></i>';">
+                      {% else %}
+                        <i class="bi bi-person-circle"></i>
+                      {% endif %}
                     </div>
                   </div>
                   
@@ -551,7 +489,7 @@
                             <div class="product-mini-card">
                               <div class="product-image">
                                 {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+                                {% image product.image width-200 class="img-fluid" %}
                                 {% else %}
                                 <div class="no-image">
                                   <i class="bi bi-image"></i>
@@ -600,10 +538,96 @@
               </div>
               {% empty %}
               <div class="col-12 text-center">
-                <p class="text-light">目前還沒有合作小農，敬請期待！</p>
+                <p class="text-light">目前還沒有合作夥伴，敬請期待！</p>
               </div>
               {% endfor %}
 
+            </div>
+          </div>
+        </section>
+
+        <!-- 合作理念區域 -->
+        <section class="cooperation-values">
+          <div class="container" data-aos="fade-up">
+            <div class="section-title text-center mb-5">
+              <h2 class="text-light">我們的合作理念</h2>
+              <p class="text-light">支持在地農業，促進永續發展，為消費者提供安心食材</p>
+            </div>
+            
+            <div class="row">
+              <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="value-item">
+                  <div class="value-icon">
+                    <i class="bi bi-heart"></i>
+                  </div>
+                  <h4 class="value-title">用心栽培</h4>
+                  <p class="value-description">
+                    每位合作夥伴都秉持著對土地的敬愛，採用友善環境的耕作方式，
+                    不使用過量農藥，讓作物在自然環境中健康成長。
+                  </p>
+                </div>
+              </div>
+              
+              <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="value-item">
+                  <div class="value-icon">
+                    <i class="bi bi-shield-check"></i>
+                  </div>
+                  <h4 class="value-title">品質保證</h4>
+                  <p class="value-description">
+                    嚴格的品質管控流程，從種植、採收到包裝，每個環節都經過仔細檢驗，
+                    確保每份農產品都達到最高品質標準。
+                  </p>
+                </div>
+              </div>
+              
+              <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="value-item">
+                  <div class="value-icon">
+                    <i class="bi bi-truck"></i>
+                  </div>
+                  <h4 class="value-title">新鮮直送</h4>
+                  <p class="value-description">
+                    建立完善的冷鏈配送系統，從農場直接配送到消費者手中，
+                    縮短中間流程，確保農產品的新鮮度和營養價值。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 統計數據 -->
+        <section class="stats-section" data-aos="fade-up">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                  <span class="stat-number" data-target="{{ vendors.count }}">0</span>
+                  <p class="stat-label">合作夥伴</p>
+                </div>
+              </div>
+              
+              <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                  <span class="stat-number" data-target="{{ categories.count }}">0</span>
+                  <p class="stat-label">產品分類</p>
+                </div>
+              </div>
+              
+              <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                  <span class="stat-number" data-target="15">0</span>
+                  <p class="stat-label">合作縣市</p>
+                </div>
+              </div>
+              
+              <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                  <span class="stat-number" data-target="98">0</span>
+                  <p class="stat-label">滿意度 %</p>
+                </div>
+              </div>
             </div>
           </div>
         </section>

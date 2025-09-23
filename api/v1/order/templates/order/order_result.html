@@ -392,16 +392,21 @@
           {% if order.status == 'pending' %}
           <div class="payment-info">
             <i class="bi bi-exclamation-triangle"></i>
-            <strong>請注意：</strong>此訂單尚未付款，請點擊下方按鈕完成付款程序。
+            <strong>請注意：</strong>此訂單尚未付款。如需付款，請重新下單。
           </div>
           {% endif %}
           
           <div class="action-buttons">
+            {% comment %}
+            <!-- 移除立即付款功能，因為綠界同筆訂單編號只能下單一次 -->
             {% if order.status == 'pending' %}
               <a href="/api/v1/payment/checkout/{{ order.id }}/" class="btn-payment">
                 <i class="bi bi-credit-card"></i> 立即付款
               </a>
             {% elif order.status == 'paid' %}
+            {% endcomment %}
+            
+            {% if order.status == 'paid' %}
               <div class="alert-info">
                 <i class="bi bi-check-circle"></i>
                 付款已完成，我們將盡快為您處理訂單。

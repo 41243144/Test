@@ -31,14 +31,14 @@ class HomePage(Page):
 
 
 class CooperativeFarmersPage(Page):
-    """合作小農頁面模型"""
+    """合作夥伴頁面模型"""
     
-    # StreamField 讓管理員可以自由編輯合作小農頁面內容
+    # StreamField 讓管理員可以自由編輯合作夥伴頁面內容
     body = StreamField(
         HomePageStreamBlock(),
         blank=True,
         verbose_name="頁面內容",
-        help_text="使用區塊編輯器來建立合作小農頁面內容。可以新增、移動和刪除各種內容區塊。"
+        help_text="使用區塊編輯器來建立合作夥伴頁面內容。可以新增、移動和刪除各種內容區塊。"
     )
     
     # 管理面板設定
@@ -50,7 +50,7 @@ class CooperativeFarmersPage(Page):
     template = 'home/cooperative_farmers_page.html'
     
     def get_context(self, request):
-        """為模板提供合作小農相關的資料"""
+        """為模板提供合作夥伴相關的資料"""
         context = super().get_context(request)
         
         # 導入 vendor 模型
@@ -71,5 +71,5 @@ class CooperativeFarmersPage(Page):
         return context
     
     class Meta:
-        verbose_name = "合作小農頁面"
-        verbose_name_plural = "合作小農頁面"
+        verbose_name = "合作夥伴頁面"
+        verbose_name_plural = "合作夥伴頁面"

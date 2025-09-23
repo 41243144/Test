@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Sum
 from api.v1.vendor.models import Vendor
+from wagtail.images.models import Image
 
 
 class Product(models.Model):
@@ -13,7 +14,8 @@ class Product(models.Model):
     description = models.TextField('商品描述', blank=True)
     price       = models.DecimalField('售價', max_digits=10, decimal_places=2)
     stock       = models.PositiveIntegerField('庫存量', default=0)
-    image       = models.ImageField('商品圖片', upload_to='products/', blank=True, null=True)
+    image       = models.ForeignKey(Image, verbose_name="商品圖片",
+                                    null=True, blank=True, on_delete=models.SET_NULL, related_name="+")
     sales_count = models.PositiveIntegerField('銷售數量', default=0)
     is_featured = models.BooleanField('精選商品', default=False)
     is_active   = models.BooleanField('啟用狀態', default=True)
@@ -30,14 +32,15 @@ class Product(models.Model):
 
     @property
     def total_sales(self):
-        """計算總銷售量"""
-        from api.v1.order.models import OrderItem
-        return OrderItem.objects.filter(product=self).aggregate(
-            total=Sum('quantity')
-        )['total'] or 0
+        """計算總銷售量 - 只計算已付款的訂單"""
+        from api.v1.order.models import OrderItem, Order
+        return OrderItem.objects.filter(
+            product=self,
+            order__status=Order.STATUS_PAID  # 只計算已付款的訂單
+        ).aggregate(total=Sum('quantity'))['total'] or 0
 
     def update_sales_count(self):
-        """更新銷售數量"""
+        """更新銷售數量 - 只計算已付款的訂單"""
         self.sales_count = self.total_sales
         self.save(update_fields=['sales_count'])
 

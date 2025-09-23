@@ -415,7 +415,7 @@
         <h1>訂單詳情</h1>
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-center">
-            <li class="breadcrumb-item"><a href="/home/">首頁</a></li>
+            <li class="breadcrumb-item"><a href="/">首頁</a></li>
             <li class="breadcrumb-item"><a href="/cart/">購物車</a></li>
             <li class="breadcrumb-item active">訂單詳情</li>
           </ol>
@@ -561,7 +561,7 @@
           {% if order.status == 'pending' %}
           <div class="alert-custom">
             <i class="bi bi-exclamation-triangle"></i>
-            <strong>請注意：</strong>此訂單尚未付款，請點擊下方按鈕完成付款程序。
+            <strong>請注意：</strong>此訂單尚未付款。如需付款，請重新下單。
           </div>
           {% elif order.status == 'paid' %}
           <div class="alert-custom alert-success">
@@ -572,17 +572,20 @@
           
           <!-- 操作按鈕 -->
           <div class="action-buttons">
+            {% comment %}
+            <!-- 移除立即付款功能，因為綠界同筆訂單編號只能下單一次 -->
             {% if order.status == 'pending' %}
               <a href="/api/v1/payment/checkout/{{ order.id }}/" class="btn-payment">
                 <i class="bi bi-credit-card"></i> 立即付款
               </a>
             {% endif %}
+            {% endcomment %}
             
             <a href="/cart/" class="btn-secondary">
               <i class="bi bi-cart"></i> 返回購物車
             </a>
             
-            <a href="/home/" class="btn-secondary">
+            <a href="/" class="btn-secondary">
               <i class="bi bi-house"></i> 返回首頁
             </a>
           </div>
@@ -602,7 +605,7 @@
               <a href="/cart/" class="btn-secondary">
                 <i class="bi bi-cart"></i> 返回購物車
               </a>
-              <a href="/home/" class="btn-secondary">
+              <a href="/" class="btn-secondary">
                 <i class="bi bi-house"></i> 返回首頁
               </a>
             </div>

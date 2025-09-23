@@ -24,39 +24,157 @@
             <p class="mt-3"><strong>電話:</strong> <span>{{ contact_phone|default:'+886-2-1234-5678' }}</span></p>
             <p><strong>信箱:</strong> <span>{{ contact_email|default:'contact@shanghuyun.com' }}</span></p>
           </div>
+        </div>
+
+        <div class="col-lg-4 col-md-3 footer-links">
+          <h4>快速連結</h4>
+          <ul>
+            <li><a href="/">首頁</a></li>
+            <li><a href="{% url 'news:list' %}">最新消息</a></li>
+            <li><a href="{% url 'home:cooperative_farmers' %}">合作夥伴</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-3 footer-links">
+          {# 社群媒體連結 - 從 site_settings 直接調取 #}
+          {% get_site_setting 'facebook_url' as facebook_url %}
+          {% get_site_setting 'twitter_url' as twitter_url %}
+          {% get_site_setting 'instagram_url' as instagram_url %}
+          {% get_site_setting 'youtube_url' as youtube_url %}
+          {% get_site_setting 'linkedin_url' as threads_url %}
           
-          {% get_social_links as social_links %}
-          {% if social_links %}
-          <div class="social-links d-flex mt-4">
-            {% for link in social_links %}
-              <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" title="{{ link.name }}">
-                <i class="{{ link.icon }}"></i>
-              </a>
-            {% endfor %}
+          {% if facebook_url or twitter_url or instagram_url or youtube_url or threads_url %}
+          <h4>關注我們</h4>
+          <div class="social-links-footer">
+            {% if facebook_url %}
+              <div class="social-item mb-2">
+                <a href="{{ facebook_url }}" target="_blank" rel="noopener noreferrer" title="Facebook" class="social-link-text facebook">
+                  <i class="fab fa-facebook-f me-2"></i>Facebook
+                </a>
+              </div>
+            {% endif %}
+            {% if twitter_url %}
+              <div class="social-item mb-2">
+                <a href="{{ twitter_url }}" target="_blank" rel="noopener noreferrer" title="Twitter" class="social-link-text twitter">
+                  <i class="fab fa-twitter me-2"></i>Twitter
+                </a>
+              </div>
+            {% endif %}
+            {% if instagram_url %}
+              <div class="social-item mb-2">
+                <a href="{{ instagram_url }}" target="_blank" rel="noopener noreferrer" title="Instagram" class="social-link-text instagram">
+                  <i class="fab fa-instagram me-2"></i>Instagram
+                </a>
+              </div>
+            {% endif %}
+            {% if youtube_url %}
+              <div class="social-item mb-2">
+                <a href="{{ youtube_url }}" target="_blank" rel="noopener noreferrer" title="YouTube" class="social-link-text youtube">
+                  <i class="fab fa-youtube me-2"></i>YouTube
+                </a>
+              </div>
+            {% endif %}
+            {% if threads_url %}
+              <div class="social-item mb-2">
+                <a href="{{ threads_url }}" target="_blank" rel="noopener noreferrer" title="Threads" class="social-link-text threads">
+                  <i class="fab fa-threads me-2"></i>Threads
+                </a>
+              </div>
+            {% endif %}
           </div>
+          
+          {# 社群連結樣式 #}
+          <style>
+            .social-links-footer {
+              margin-top: 15px;
+            }
+            
+            .social-item {
+              transition: all 0.3s ease;
+            }
+            
+            .social-link-text {
+              display: inline-flex;
+              align-items: center;
+              padding: 8px 12px;
+              border-radius: 6px;
+              text-decoration: none;
+              font-size: 14px;
+              font-weight: 500;
+              transition: all 0.3s ease;
+              width: 100%;
+            }
+            
+            .social-link-text:hover {
+              text-decoration: none;
+              transform: translateX(5px);
+            }
+            
+            .social-link-text.facebook {
+              color: #1877f2;
+              background: rgba(24, 119, 242, 0.1);
+            }
+            
+            .social-link-text.facebook:hover {
+              color: white;
+              background: #1877f2;
+            }
+            
+            .social-link-text.twitter {
+              color: #1da1f2;
+              background: rgba(29, 161, 242, 0.1);
+            }
+            
+            .social-link-text.twitter:hover {
+              color: white;
+              background: #1da1f2;
+            }
+            
+            .social-link-text.instagram {
+              color: #e4405f;
+              background: rgba(228, 64, 95, 0.1);
+            }
+            
+            .social-link-text.instagram:hover {
+              color: white;
+              background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+            }
+            
+            .social-link-text.youtube {
+              color: #ff0000;
+              background: rgba(255, 0, 0, 0.1);
+            }
+            
+            .social-link-text.youtube:hover {
+              color: white;
+              background: #ff0000;
+            }
+            
+            .social-link-text.threads {
+              color: #ffffff;
+              background: rgba(255, 255, 255, 0.1);
+              border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            
+            .social-link-text.threads:hover {
+              color: #000000;
+              background: #ffffff;
+              border: 1px solid #ffffff;
+            }
+            
+            @media (max-width: 768px) {
+              .social-link-text {
+                font-size: 13px;
+                padding: 6px 10px;
+              }
+            }
+          </style>
+          {% else %}
+          <h4>comming soon</h4>
+          <ul>
+            <li><a href="#">comming soon</a></li>
+          </ul>
           {% endif %}
-        </div>
-
-        <div class="col-lg-4 col-md-3 footer-links">
-          <h4>Useful Links</h4>
-          <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">About us</a></li>
-            <li><a href="#">Services</a></li>
-            <li><a href="#">Terms of service</a></li>
-            <li><a href="#">Privacy policy</a></li>
-          </ul>
-        </div>
-
-        <div class="col-lg-4 col-md-3 footer-links">
-          <h4>Our Services</h4>
-          <ul>
-            <li><a href="#">Web Design</a></li>
-            <li><a href="#">Web Development</a></li>
-            <li><a href="#">Product Management</a></li>
-            <li><a href="#">Marketing</a></li>
-            <li><a href="#">Graphic Design</a></li>
-          </ul>
         </div>
 
         {% comment %} <div class="col-lg-4 col-md-12 footer-newsletter">
@@ -74,7 +192,8 @@
     </div>
 
     <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Restaurantly</strong> <span>All Rights Reserved</span></p>
+      {% get_site_setting 'site_name' as copyright_site_name %}
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">{{ copyright_site_name|default:'尚虎雲平台' }}</strong> <span>All Rights Reserved</span></p>
       <div class="credits">
         <!-- All the links in the footer should remain intact. -->
         <!-- You can delete the links only if you've purchased the pro version. -->

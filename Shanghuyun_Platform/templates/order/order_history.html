@@ -409,7 +409,7 @@
         <h1>訂單紀錄</h1>
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-center">
-            <li class="breadcrumb-item"><a href="/home/">首頁</a></li>
+            <li class="breadcrumb-item"><a href="/">首頁</a></li>
             <li class="breadcrumb-item"><a href="/cart/">購物車</a></li>
             <li class="breadcrumb-item active">訂單紀錄</li>
           </ol>
@@ -525,11 +525,14 @@
             <a href="/api/v1/order/result/?order_id={{ order.id }}" class="btn-action">
               <i class="bi bi-eye"></i> 查看詳情
             </a>
+            {% comment %}
+            <!-- 移除立即付款功能，因為綠界同筆訂單編號只能下單一次 -->
             {% if order.status == 'pending' %}
               <a href="/api/v1/payment/checkout/{{ order.id }}/" class="btn-action btn-payment">
                 <i class="bi bi-credit-card"></i> 立即付款
               </a>
             {% endif %}
+            {% endcomment %}
           </div>
         </div>
         {% endfor %}

@@ -15,6 +15,15 @@
     ======================================================== -->
   </head>
   <body class="{% block body_class %}{% endblock %}">
+    {% load site_settings_tags %}
+    
+    {# Google Tag Manager (noscript) #}
+    {% get_site_setting 'google_tag_manager_id' as gtm_id %}
+    {% if gtm_id %}
+      <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ gtm_id }}"
+      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    {% endif %}
+    
     {% wagtailuserbar %}
 
     {% include "includes/_header.html" %}

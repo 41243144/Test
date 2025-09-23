@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from .models import Order, OrderItem
 from api.v1.product.models import Product
+import traceback
 
 @csrf_exempt
 def create_order(request):
@@ -80,11 +81,11 @@ def create_order(request):
                 quantity=qty,
                 price=product.price
             )
+            print(product.price)
             
             # Update product stock
             product.stock -= qty
             product.save()
-            
             order_items.append({
                 "product_id": oi.product.id,
                 "name": oi.product.name,
@@ -105,6 +106,7 @@ def create_order(request):
 
     except Exception as e:
         # If order creation fails, rollback might be needed
+        print(traceback.format_exc())
         return JsonResponse({"error": f"Order creation failed: {str(e)}"}, status=500)
 
 def order_result(request):

@@ -241,7 +241,11 @@ class ContactBlock(blocks.StructBlock):
     """聯絡我們區塊"""
     title = blocks.CharBlock(required=True, max_length=255, label="區塊標題")
     subtitle = blocks.CharBlock(required=False, max_length=255, label="副標題")
-    map_embed_url = blocks.URLBlock(required=False, label="地圖嵌入網址")
+    map_embed_code = blocks.TextBlock(
+        required=False, 
+        label="地圖嵌入代碼",
+        help_text="請直接貼上 Google Maps 或其他地圖服務的完整 iframe 嵌入代碼"
+    )
     contact_info = blocks.ListBlock(
         blocks.StructBlock([
             ('icon', blocks.CharBlock(

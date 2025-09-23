@@ -96,6 +96,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "Shanghuyun_Platform.middleware.restrict_wagtail_images.RestrictWagtailImagesAdminMiddleware",
 ]
 
 ROOT_URLCONF = "Shanghuyun_Platform.urls"
@@ -206,6 +207,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10_000
 # Wagtail settings
 
 WAGTAIL_SITE_NAME = "Shanghuyun_Platform"
+WAGTAIL_EMAIL_MANAGEMENT_ENABLED = False
 
 # Search
 # https://docs.wagtail.org/en/stable/topics/search/backends.html

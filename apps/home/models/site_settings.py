@@ -108,8 +108,8 @@ class SiteBasicSetting(BaseGenericSetting, RevisionMixin):
     
     linkedin_url = models.URLField(
         blank=True,
-        verbose_name="LinkedIn 連結",
-        help_text="LinkedIn 公司頁面網址"
+        verbose_name="Threads 連結",
+        help_text="Threads 帳號網址（Meta 社群平台）"
     )
     
     # SEO 設定
@@ -230,7 +230,7 @@ class SiteBasicSetting(BaseGenericSetting, RevisionMixin):
             ('twitter_url', 'Twitter', 'fab fa-twitter'),
             ('instagram_url', 'Instagram', 'fab fa-instagram'),
             ('youtube_url', 'YouTube', 'fab fa-youtube'),
-            ('linkedin_url', 'LinkedIn', 'fab fa-linkedin-in'),
+            ('linkedin_url', 'Threads', 'fab fa-threads'),
         ]
         
         for field_name, platform_name, icon_class in social_platforms:

@@ -7,6 +7,9 @@
   {# 將網站基本設定套用到 <head>：標題/描述/Favicon/GA/GTM #}
   {% render_meta_tags %}
   
+  {# CSRF Token for AJAX requests #}
+  {% csrf_token %}
+  
   <style>
     /* 小農商品列表頁面專屬樣式 */
     
@@ -18,134 +21,7 @@
       padding: 120px 0 80px 0;
     }
 
-// 加入購物車功能
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('add-to-cart-btn') || e.target.closest('.add-to-cart-btn')) {
-        e.preventDefault();
-        
-        const button = e.target.classList.contains('add-to-cart-btn') ? e.target : e.target.closest('.add-to-cart-btn');
-        const productId = button.getAttribute('data-product-id');
-        
-        // 顯示載入狀態
-        const originalText = button.innerHTML;
-        button.innerHTML = '<i class="bi bi-hourglass-split"></i> 加入中...';
-        button.disabled = true;
-        
-        fetch('{% url "cart:add_to_cart" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                product_id: productId,
-                quantity: 1
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                button.innerHTML = '<i class="bi bi-check-circle"></i> 已加入';
-                button.style.background = '#28a745';
-                button.style.borderColor = '#28a745';
-                button.style.color = '#fff';
-                
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.style.background = 'transparent';
-                    button.style.borderColor = '#cda45e';
-                    button.style.color = '#cda45e';
-                    button.disabled = false;
-                }, 2000);
-                
-                showNotification(data.message, 'success');
-                updateCartCount(data.total_items);
-            } else {
-                button.innerHTML = originalText;
-                button.disabled = false;
-                showNotification(data.message, 'error');
-            }
-        })
-        .catch(error => {
-            button.innerHTML = originalText;
-            button.disabled = false;
-            showNotification('加入購物車失敗，請稍後再試', 'error');
-        });
-    }
-});
-
-// 獲取 CSRF Token
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-// 更新購物車數量
-function updateCartCount(count) {
-    const cartCountElements = document.querySelectorAll('.cart-count');
-    cartCountElements.forEach(element => {
-        element.textContent = count;
-        if (count > 0) {
-            element.style.display = 'inline';
-        }
-    });
-}
-
-// 顯示通知
-function showNotification(message, type = 'info') {
-    const alertClass = type === 'success' ? 'alert-success' : type === 'error' ? 'alert-danger' : 'alert-info';
-    
-    const notification = document.createElement('div');
-    notification.className = `alert ${alertClass} notification-toast`;
-    notification.style.cssText = `
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        z-index: 9999;
-        animation: slideInRight 0.3s ease-out;
-        min-width: 300px;
-    `;
-    notification.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center">
-            <span>${message}</span>
-            <button type="button" class="btn-close ms-2" aria-label="Close"></button>
-        </div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // 關閉按鈕功能
-    notification.querySelector('.btn-close').addEventListener('click', function() {
-        notification.remove();
-    });
-    
-    // 自動移除
-    setTimeout(() => {
-        if (notification.parentNode) {
-            notification.remove();
-        }
-    }, 3000);
-}
-
-// CSS 動畫樣式
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideInRight {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-`;
-document.head.appendChild(style);* 小農資訊卡片 */
+    /* 小農資訊卡片 */
     .vendor-info-card {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.1);
@@ -166,6 +42,19 @@ document.head.appendChild(style);* 小農資訊卡片 */
       color: white;
       font-size: 2.5rem;
       margin-right: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .vendor-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .vendor-avatar:hover img {
+      transform: scale(1.05);
     }
 
     /* 商品卡片設計 */
@@ -418,7 +307,7 @@ document.head.appendChild(style);* 小農資訊卡片 */
         <nav class="breadcrumbs">
           <ol>
             <li><a href="/">首頁</a></li>
-            <li><a href="{% url 'home:cooperative_farmers' %}">合作小農</a></li>
+            <li><a href="{% url 'home:cooperative_farmers' %}">合作夥伴</a></li>
             <li class="current">{{ vendor.name }}</li>
           </ol>
         </nav>
@@ -431,7 +320,14 @@ document.head.appendChild(style);* 小農資訊卡片 */
         <div class="vendor-info-card" data-aos="fade-up">
           <div class="d-flex align-items-center">
             <div class="vendor-avatar">
-              <i class="bi bi-person-circle"></i>
+              {% if vendor.user.profile.portrait %}
+                <img src="{{ vendor.user.profile.portrait.url }}" 
+                     alt="{{ vendor.name }}"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <i class="bi bi-person-circle" style="display: none;"></i>
+              {% else %}
+                <i class="bi bi-person-circle"></i>
+              {% endif %}
             </div>
             <div class="flex-grow-1">
               <h3 class="text-light">{{ vendor.name }}</h3>
@@ -518,7 +414,7 @@ document.head.appendChild(style);* 小農資訊卡片 */
               
               <div class="product-image">
                 {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% image product.image width-300 %}
                 {% else %}
                 <div class="no-image">
                   <i class="bi bi-image"></i>
@@ -623,6 +519,166 @@ document.addEventListener('DOMContentLoaded', function() {
             once: true
         });
     }
+
+    // 加入購物車功能
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('add-to-cart-btn') || e.target.closest('.add-to-cart-btn')) {
+            e.preventDefault();
+            
+            const button = e.target.classList.contains('add-to-cart-btn') ? e.target : e.target.closest('.add-to-cart-btn');
+            const productId = button.getAttribute('data-product-id');
+            
+            // 顯示載入狀態
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i> 加入中...';
+            button.disabled = true;
+            
+            // 獲取 CSRF token 並檢查
+            const csrfToken = getCSRFToken();
+            console.log('CSRF Token:', csrfToken);
+            console.log('Product ID:', productId);
+            console.log('Request URL:', '{% url "cart:add_to_cart" %}');
+            
+            fetch('{% url "cart:add_to_cart" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.innerHTML = '<i class="bi bi-check-circle"></i> 已加入';
+                    button.style.background = '#28a745';
+                    button.style.borderColor = '#28a745';
+                    button.style.color = '#fff';
+                    
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.style.background = 'transparent';
+                        button.style.borderColor = '#cda45e';
+                        button.style.color = '#cda45e';
+                        button.disabled = false;
+                    }, 2000);
+                    
+                    showNotification(data.message, 'success');
+                    updateCartCount(data.total_items);
+                } else {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('加入購物車錯誤:', error);
+                button.innerHTML = originalText;
+                button.disabled = false;
+                showNotification('加入購物車失敗，請稍後再試', 'error');
+            });
+        }
+    });
+
+    // 獲取 CSRF Token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // 設置 CSRF token 到全域變數（備用方案）
+    function getCSRFToken() {
+        // 首先嘗試從 cookie 獲取
+        let token = getCookie('csrftoken');
+        
+        // 如果 cookie 中沒有，嘗試從 meta tag 獲取
+        if (!token) {
+            const metaToken = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (metaToken) {
+                token = metaToken.value;
+            }
+        }
+        
+        // 如果還是沒有，嘗試從隱藏的 input 獲取
+        if (!token) {
+            const inputToken = document.querySelector('input[name=csrfmiddlewaretoken]');
+            if (inputToken) {
+                token = inputToken.value;
+            }
+        }
+        
+        return token;
+    }
+
+    // 更新購物車數量
+    function updateCartCount(count) {
+        const cartCountElements = document.querySelectorAll('.cart-count');
+        cartCountElements.forEach(element => {
+            element.textContent = count;
+            if (count > 0) {
+                element.style.display = 'inline';
+            }
+        });
+    }
+
+    // 顯示通知
+    function showNotification(message, type = 'info') {
+        const alertClass = type === 'success' ? 'alert-success' : type === 'error' ? 'alert-danger' : 'alert-info';
+        
+        const notification = document.createElement('div');
+        notification.className = `alert ${alertClass} notification-toast`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 9999;
+            animation: slideInRight 0.3s ease-out;
+            min-width: 300px;
+        `;
+        notification.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <span>${message}</span>
+                <button type="button" class="btn-close ms-2" aria-label="Close"></button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // 關閉按鈕功能
+        notification.querySelector('.btn-close').addEventListener('click', function() {
+            notification.remove();
+        });
+        
+        // 自動移除
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+
+    // 添加 CSS 動畫樣式
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
 
     // 搜尋功能
     const searchInput = document.getElementById('productSearch');

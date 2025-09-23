@@ -74,6 +74,27 @@ def get_social_links(context):
     return []
 
 
+@register.simple_tag(takes_context=True)
+def debug_site_settings(context):
+    """
+    除錯用：顯示 site_settings 物件的所有屬性
+    用法：{% debug_site_settings %}
+    """
+    request = context.get('request')
+    settings = get_site_settings(request)
+    
+    if settings:
+        debug_info = {
+            'object_type': type(settings).__name__,
+            'object_id': getattr(settings, 'id', 'No ID'),
+            'site_name': getattr(settings, 'site_name', 'No site_name'),
+            'available_attributes': [attr for attr in dir(settings) if not attr.startswith('_') and not callable(getattr(settings, attr))],
+        }
+        return f"Settings Object: {debug_info}"
+    else:
+        return "No settings found"
+
+
 # 維護模式過濾器已移除
 
 
