@@ -18,6 +18,27 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 load_dotenv(f'{BASE_DIR}/.env')
 
+# -------- Environment helpers (NEW) --------
+def env_bool(name: str, default: bool = False) -> bool:
+    val = os.getenv(name)
+    if val is None:
+        return default
+    return val.strip().lower() in {"1", "true", "t", "yes", "y", "on"}
+
+# 是否在 Render（Render 的環境變數設 IS_RENDER=True）
+IS_RENDER = env_bool("IS_RENDER", default=False)
+
+# 掛載磁碟根目錄（Render 預設：/opt/render/project/data）
+RENDER_DATA_DIR = os.getenv("RENDER_DATA_DIR", "/opt/render/project/data")
+# 本機/開發環境 data 目錄
+LOCAL_DATA_DIR = os.path.join(BASE_DIR, "data")
+
+# 最終資料目錄（SQLite / 上傳檔案都放這裡）
+DATA_DIR = RENDER_DATA_DIR if IS_RENDER else LOCAL_DATA_DIR
+
+# 確保資料夾存在
+os.makedirs(DATA_DIR, exist_ok=True)
+os.makedirs(os.path.join(DATA_DIR, "media"), exist_ok=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -81,8 +102,6 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-
-
 ]
 
 MIDDLEWARE = [
@@ -127,10 +146,11 @@ WSGI_APPLICATION = "Shanghuyun_Platform.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# -------- Database (REPLACE) --------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        "NAME": os.path.join(DATA_DIR, "db.sqlite3"),
     }
 }
 
@@ -181,7 +201,8 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# -------- Media / Static (PARTIAL REPLACE) --------
+MEDIA_ROOT = os.path.join(DATA_DIR, "media")
 MEDIA_URL = "/media/"
 
 # Default storage settings, with the staticfiles storage updated.
