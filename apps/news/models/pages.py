@@ -2,13 +2,13 @@ from django.db import models
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import get_object_or_404
 from django.utils.text import slugify
-from autoslug import AutoSlugField
 
 from wagtail.models import Page
 from wagtail.fields import StreamField, RichTextField
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, InlinePanel
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
+import re
 
 from .blocks import NewsContentStreamBlock
 from .snippets import NewsCategory, NewsTag, NewsAuthor
@@ -284,29 +284,104 @@ class NewsPost(Page):
             return f"/news/{self.pk}/"
 
     def save(self, *args, **kwargs):
+        # 自動產生 slug（如果沒有設定的話）
+        if not self.slug:
+            self.slug = self.generate_slug_from_chinese(self.title)
+        
         # 自動設定 meta_description
         if not self.meta_description and self.excerpt:
             self.meta_description = self.excerpt[:160]
         
-        # 使用 AutoSlugField 的方式自動生成 slug
-        if not self.slug:
-            base_slug = slugify(self.title, allow_unicode=True)
-            if not base_slug:
-                # 如果標題是純中文無法轉換，使用簡單的識別碼
-                import uuid
-                base_slug = f"post-{uuid.uuid4().hex[:8]}"
-            
-            # 確保 slug 唯一性
-            original_slug = base_slug[:50]
-            slug = original_slug
-            counter = 1
-            while NewsPost.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-                suffix = f"-{counter}"
-                slug = f"{original_slug[:50-len(suffix)]}{suffix}"
-                counter += 1
-            self.slug = slug
-        
         super().save(*args, **kwargs)
+
+    def generate_slug_from_chinese(self, text):
+        """將中文文字轉換為適合的英文 slug"""
+        # 常見中文詞彙到英文的映射
+        chinese_to_english = {
+            '農業': 'agriculture',
+            '技術': 'technology', 
+            '創新': 'innovation',
+            '市場': 'market',
+            '行情': 'trends',
+            '政策': 'policy',
+            '法規': 'regulations',
+            '有機': 'organic',
+            '智慧': 'smart',
+            '發展': 'development',
+            '認證': 'certification',
+            '安全': 'safety',
+            '食品': 'food',
+            '產品': 'product',
+            '新聞': 'news',
+            '消息': 'news',
+            '公告': 'announcement',
+            '活動': 'event',
+            '研究': 'research',
+            '報告': 'report',
+            '分析': 'analysis',
+            '趨勢': 'trend',
+            '未來': 'future',
+            '科技': 'technology',
+            '數位': 'digital',
+            '永續': 'sustainable',
+            '環保': 'environmental',
+            '綠色': 'green',
+            '生態': 'ecological',
+        }
+        
+        # 先將文字轉為小寫並移除標點符號
+        processed_text = re.sub(r'[^\w\s]', '', text).lower()
+        
+        # 逐字替換中文詞彙
+        slug_parts = []
+        words = processed_text.split()
+        
+        for word in words:
+            # 檢查是否有直接映射
+            if word in chinese_to_english:
+                slug_parts.append(chinese_to_english[word])
+            else:
+                # 嘗試部分替換
+                translated_word = word
+                for chinese, english in chinese_to_english.items():
+                    if chinese in word:
+                        translated_word = translated_word.replace(chinese, english)
+                
+                # 移除剩餘的中文字符
+                translated_word = re.sub(r'[\u4e00-\u9fff]', '', translated_word)
+                
+                # 如果還有內容，加入結果
+                if translated_word.strip():
+                    slug_parts.append(translated_word)
+        
+        # 組合結果
+        if slug_parts:
+            slug_base = '-'.join(slug_parts)
+        else:
+            # 如果沒有可翻譯的內容，使用通用名稱
+            slug_base = f"post-{self.pk or 'new'}"
+        
+        # 使用 Django 的 slugify 進一步清理
+        slug_base = slugify(slug_base) or f"post-{self.pk or 'new'}"
+        
+        # 限制長度
+        if len(slug_base) > 50:
+            slug_base = slug_base[:50].rstrip('-')
+        
+        # 確保 slug 的唯一性
+        original_slug = slug_base
+        counter = 1
+        while NewsPost.objects.filter(slug=slug_base).exclude(pk=self.pk).exists():
+            suffix = f"-{counter}"
+            if len(original_slug + suffix) > 50:
+                # 如果加上數字後超過長度限制，縮短原始 slug
+                truncated = original_slug[:50-len(suffix)]
+                slug_base = f"{truncated}{suffix}"
+            else:
+                slug_base = f"{original_slug}{suffix}"
+            counter += 1
+        
+        return slug_base
 
     class Meta:
         verbose_name = "新聞文章"
